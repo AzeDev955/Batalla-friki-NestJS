@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Batalla Friki - Arena</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #2c3e50;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+      }
+      .container {
+        background: #34495e;
+        padding: 2rem;
+        border-radius: 10px;
+        width: 90%;
+        max-width: 800px;
+        margin-top: 2rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      }
+      h1,
+      h2 {
+        text-align: center;
+        color: #f1c40f;
+      }
+      input,
+      select,
+      button {
+        padding: 10px;
+        margin: 5px;
+        width: 100%;
+        box-sizing: border-box;
+        border-radius: 5px;
+        border: none;
+      }
+      button {
+        background-color: #e74c3c;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s;
+      }
+      button:hover {
+        background-color: #c0392b;
+      }
+      button:disabled {
+        background-color: #95a5a6;
+        cursor: not-allowed;
+      }
+      .secondary-btn {
+        background-color: #7f8c8d;
+      }
+      .secondary-btn:hover {
+        background-color: #95a5a6;
+      }
+
+      .hidden {
+        display: none;
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+      }
+
+      /* Estilos de Batalla */
+      .battle-arena {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+      .fighter {
+        text-align: center;
+        width: 45%;
+        background: rgba(0, 0, 0, 0.2);
+        padding: 10px;
+        border-radius: 8px;
+      }
+      .fighter h3 {
+        color: #3498db;
+      }
+      .hp-bar {
+        width: 100%;
+        height: 20px;
+        background-color: #555;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 5px;
+      }
+      .hp-fill {
+        height: 100%;
+        background-color: #2ecc71;
+        width: 100%;
+        transition: width 0.3s ease;
+      }
+      .hp-danger {
+        background-color: #e74c3c;
+      }
+
+      #logs {
+        background: #222;
+        height: 150px;
+        overflow-y: scroll;
+        padding: 10px;
+        margin-top: 15px;
+        border-radius: 5px;
+        font-family: monospace;
+        font-size: 0.9rem;
+        border: 1px solid #555;
+      }
+      .log-entry {
+        margin-bottom: 5px;
+        border-bottom: 1px solid #333;
+        padding-bottom: 2px;
+      }
+      .link-text {
+        color: #3498db;
+        cursor: pointer;
+        text-decoration: underline;
+        text-align: center;
+        display: block;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container" id="login-screen">
+      <h1>🔐 Acceso a Batalla Friki</h1>
+      <input
+        type="email"
+        id="email"
+        placeholder="Email (ej: admin@batalla.com)"
+        value="admin@batalla.com"
+      />
+      <input
+        type="password"
+        id="password"
+        placeholder="Contraseña"
+        value="admin123"
+      />
+      <button onclick="login()">Entrar</button>
+      <p id="login-error" style="color: #e74c3c; text-align: center"></p>
+      <span
+        class="link-text"
+        onclick="toggleScreens('login-screen', 'register-screen')"
+        >¿No tienes cuenta? Regístrate aquí</span
+      >
+    </div>
+
+    <div class="container hidden" id="register-screen">
+      <h1>📝 Nuevo Jugador</h1>
+      <input type="text" id="reg-name" placeholder="Nombre de Jugador (Nick)" />
+      <input type="email" id="reg-email" placeholder="Email" />
+      <input type="password" id="reg-password" placeholder="Contraseña" />
+      <button onclick="register()" style="background-color: #27ae60">
+        Registrarse
+      </button>
+      <button
+        class="secondary-btn"
+        onclick="toggleScreens('register-screen', 'login-screen')"
+      >
+        Volver al Login
+      </button>
+      <p id="reg-error" style="color: #e74c3c; text-align: center"></p>
+    </div>
+
+    <div class="container hidden" id="lobby-screen">
+      <h2 id="welcome-msg">Bienvenido</h2>
+      <div class="row">
+        <div style="flex: 1">
+          <h3>1. Elige tu Personaje</h3>
+          <select id="my-char-select"></select>
+        </div>
+        <div style="flex: 1">
+          <h3>2. Oponente (ID Usuario)</h3>
+          <input
+            type="number"
+            id="opponent-id"
+            placeholder="ID del rival (ej: 2)"
+          />
+          <select id="opponent-char-select">
+            <option value="">-- Personaje Rival (Simulado) --</option>
+          </select>
+        </div>
+      </div>
+      <br />
+      <button onclick="createBattle()" style="background-color: #f39c12">
+        ⚔️ DESAFIAR (Crear Batalla)
+      </button>
+
+      <hr style="border-color: #555; margin: 20px 0" />
+
+      <h3>O unirse a una existente:</h3>
+      <div class="row">
+        <input
+          type="text"
+          id="join-battle-id"
+          placeholder="ID de Batalla (ej: battle-173...)"
+        />
+        <button onclick="joinBattle()" style="background-color: #3498db">
+          Unirse
+        </button>
+      </div>
+      <br />
+      <button class="secondary-btn" onclick="logout()">Cerrar Sesión</button>
+    </div>
+
+    <div class="container hidden" id="battle-screen">
+      <h2>🔥 ARENA DE COMBATE 🔥</h2>
+      <div
+        style="text-align: center; color: #aaa; margin-bottom: 10px"
+        id="battle-id-display"
+      ></div>
+
+      <div class="battle-arena">
+        <div class="fighter" id="p1-card">
+          <h3 id="p1-name">Jugador 1</h3>
+          <div style="font-size: 2rem">🧙‍♂️</div>
+          <div class="hp-bar"><div class="hp-fill" id="p1-hp-bar"></div></div>
+          <p>
+            <span id="p1-hp">100</span> / <span id="p1-max-hp">100</span> HP
+          </p>
+        </div>
+
+        <div
+          style="display: flex; align-items: center; justify-content: center"
+        >
+          <h1 style="margin: 0">VS</h1>
+        </div>
+
+        <div class="fighter" id="p2-card">
+          <h3 id="p2-name">Jugador 2</h3>
+          <div style="font-size: 2rem">🐉</div>
+          <div class="hp-bar"><div class="hp-fill" id="p2-hp-bar"></div></div>
+          <p>
+            <span id="p2-hp">100</span> / <span id="p2-max-hp">100</span> HP
+          </p>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px; text-align: center">
+        <h3 id="turn-msg" style="color: #f1c40f">Esperando inicio...</h3>
+        <button id="btn-attack" onclick="attack()" disabled>
+          👊 ¡ATACAR! 👊
+        </button>
+      </div>
+
+      <div id="logs"></div>
+      <button
+        onclick="location.reload()"
+        class="hidden"
+        id="btn-restart"
+        style="margin-top: 10px; background-color: #555"
+      >
+        Volver al Lobby
+      </button>
+    </div>
+
+    <script>
+      const API_URL = 'http://localhost:3000';
+      let socket;
+      let token = localStorage.getItem('jwt_token') || '';
+      let currentUser = null;
+      let currentBattleId = '';
+
+      // --- 0. UTILIDADES UI ---
+      function toggleScreens(hideId, showId) {
+        document.getElementById(hideId).classList.add('hidden');
+        document.getElementById(showId).classList.remove('hidden');
+      }
+
+      function logout() {
+        localStorage.removeItem('jwt_token');
+        location.reload();
+      }
+
+      // --- 1. LÓGICA DE REGISTRO ---
+      async function register() {
+        const name = document.getElementById('reg-name').value;
+        const email = document.getElementById('reg-email').value;
+        const password = document.getElementById('reg-password').value;
+
+        if (!name || !email || !password)
+          return alert('Rellena todos los campos');
+
+        try {
+          const res = await fetch(`${API_URL}/users`, {
+            // Endpoint estándar CRUD
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password }),
+          });
+
+          if (!res.ok)
+            throw new Error('Error al registrar (¿Email duplicado?)');
+
+          alert('¡Registro exitoso! Ahora inicia sesión.');
+          toggleScreens('register-screen', 'login-screen');
+          // Auto-rellenar login para comodidad
+          document.getElementById('email').value = email;
+        } catch (err) {
+          document.getElementById('reg-error').innerText = err.message;
+        }
+      }
+
+      // --- 2. LÓGICA DE LOGIN ---
+      async function login() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        try {
+          const res = await fetch(`${API_URL}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+          });
+
+          if (!res.ok) throw new Error('Credenciales incorrectas');
+
+          const data = await res.json();
+          token = data.access_token;
+          currentUser = data.user;
+
+          // Guardar token por si recarga
+          localStorage.setItem('jwt_token', token);
+
+          toggleScreens('login-screen', 'lobby-screen');
+          document.getElementById('welcome-msg').innerText =
+            `Hola, ${currentUser.email} (ID: ${currentUser.id})`;
+
+          connectSocket();
+          loadCharacters();
+        } catch (err) {
+          document.getElementById('login-error').innerText = err.message;
+        }
+      }
+
+      // --- 3. CARGAR PERSONAJES ---
+      async function loadCharacters() {
+        // Nota: Si tu ruta GET /characters está protegida, hay que pasar el header Authorization
+        const headers = { Authorization: `Bearer ${token}` };
+
+        try {
+          const res = await fetch(`${API_URL}/characters`, { headers });
+          if (res.status === 401) return logout(); // Token expirado
+
+          const chars = await res.json();
+          const selectMy = document.getElementById('my-char-select');
+          const selectOpp = document.getElementById('opponent-char-select');
+
+          selectMy.innerHTML = '';
+          selectOpp.innerHTML =
+            '<option value="">-- Personaje Rival --</option>';
+
+          chars.forEach((c) => {
+            const opt = `<option value="${c.id}">${c.name} (HP: ${c.hp}, ATK: ${c.attack})</option>`;
+            selectMy.innerHTML += opt;
+            selectOpp.innerHTML += opt;
+          });
+        } catch (e) {
+          console.error('Error cargando personajes', e);
+        }
+      }
+
+      // --- 4. SOCKETS ---
+      function connectSocket() {
+        if (socket) return; // Ya conectado
+
+        // Pasamos el token en la conexión (opcional, si quisieras validar en el Gateway)
+        socket = io(API_URL, {
+          extraHeaders: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        socket.on('connect', () => console.log('WS Conectado'));
+
+        socket.on('battle-created', (battle) => {
+          enterBattleMode(battle);
+          alert(
+            `¡Batalla Creada! ID: ${battle.id}\nComparte este ID con tu amigo.`,
+          );
+        });
+
+        socket.on('user-joined', (battle) => {
+          enterBattleMode(battle);
+          addLog('¡Un usuario se ha unido! Comienza el combate.');
+        });
+
+        socket.on('turn-update', (battle) => updateInterface(battle));
+
+        socket.on('battle-finished', (result) => {
+          updateInterface(result.battle);
+          document.getElementById('turn-msg').innerText =
+            `🏆 GANADOR: ${result.winner} 🏆`;
+          document.getElementById('btn-attack').disabled = true;
+          document.getElementById('btn-restart').classList.remove('hidden');
+          addLog(`--- FIN DE PARTIDA. Ganador: ${result.winner} ---`);
+        });
+      }
+
+      // --- 5. ACCIONES DEL JUEGO ---
+      function createBattle() {
+        const myChar = document.getElementById('my-char-select').value;
+        const oppId = document.getElementById('opponent-id').value;
+        const oppChar = document.getElementById('opponent-char-select').value;
+
+        if (!oppId || !oppChar) return alert('Rellena los datos del rival');
+
+        socket.emit('create-battle', {
+          player1Id: currentUser.id,
+          player1CharId: parseInt(myChar),
+          player2Id: parseInt(oppId),
+          player2CharId: parseInt(oppChar),
+        });
+      }
+
+      function joinBattle() {
+        const battleId = document.getElementById('join-battle-id').value;
+        if (!battleId) return alert('Introduce un ID de batalla');
+
+        socket.emit('join-battle', {
+          battleId: battleId,
+          userId: currentUser.id,
+        });
+      }
+
+      function attack() {
+        socket.emit('attack', {
+          battleId: currentBattleId,
+          userId: currentUser.id,
+        });
+      }
+
+      // --- 6. ACTUALIZAR UI ---
+      function enterBattleMode(battle) {
+        currentBattleId = battle.id;
+        toggleScreens('lobby-screen', 'battle-screen');
+        document.getElementById('battle-id-display').innerText =
+          `Sala: ${battle.id}`;
+        updateInterface(battle);
+      }
+
+      function updateInterface(battle) {
+        // Nombres
+        document.getElementById('p1-name').innerText =
+          battle.player1.name +
+          (battle.player1.userId === currentUser.id ? ' (TÚ)' : '');
+        document.getElementById('p2-name').innerText =
+          battle.player2.name +
+          (battle.player2.userId === currentUser.id ? ' (TÚ)' : '');
+
+        // Barras de Vida
+        updateHealthBar('p1', battle.player1.hp, battle.player1.maxHp);
+        updateHealthBar('p2', battle.player2.hp, battle.player2.maxHp);
+
+        // Turno
+        const isMyTurn = battle.turn === currentUser.id;
+        const btn = document.getElementById('btn-attack');
+        const msg = document.getElementById('turn-msg');
+
+        if (isMyTurn) {
+          btn.disabled = false;
+          btn.style.backgroundColor = '#e74c3c';
+          msg.innerText = '¡ES TU TURNO! ATACA';
+        } else {
+          btn.disabled = true;
+          btn.style.backgroundColor = '#95a5a6';
+          msg.innerText = `Turno de ${battle.turn === battle.player1.userId ? battle.player1.name : battle.player2.name}`;
+        }
+
+        // Logs
+        const logDiv = document.getElementById('logs');
+        logDiv.innerHTML = '';
+        battle.log.forEach((l) => {
+          const p = document.createElement('div');
+          p.className = 'log-entry';
+          p.innerText = l;
+          logDiv.appendChild(p);
+        });
+        logDiv.scrollTop = logDiv.scrollHeight;
+      }
+
+      function updateHealthBar(prefix, current, max) {
+        const percentage = Math.max(0, (current / max) * 100);
+        const bar = document.getElementById(`${prefix}-hp-bar`);
+        document.getElementById(`${prefix}-hp`).innerText = current;
+        document.getElementById(`${prefix}-max-hp`).innerText = max;
+
+        bar.style.width = `${percentage}%`;
+        if (percentage < 30) bar.classList.add('hp-danger');
+        else bar.classList.remove('hp-danger');
+      }
+
+      function addLog(msg) {
+        const logDiv = document.getElementById('logs');
+        const p = document.createElement('div');
+        p.className = 'log-entry';
+        p.innerText = `>>> ${msg}`;
+        logDiv.appendChild(p);
+      }
+    </script>
+  </body>
+</html>
