@@ -1,0 +1,56 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
+}
+
+generator client2 {
+  provider     = "prisma-client-js"
+  output       = "../generated/prisma2"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
+  password String
+  name     String?
+  role     Role    @default(USER)
+
+  level  Int @default(1)
+  xp     Int @default(0)
+  wins   Int @default(0)
+  losses Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Character {
+  id       Int    @id @default(autoincrement())
+  name     String @unique
+  hp       Int
+  attack   Int
+  level    Int
+  minLevel Int    @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Battle {
+  id        Int      @id @default(autoincrement())
+  winnerId  Int
+  loserId   Int
+  log       String[]
+  createdAt DateTime @default(now())
+}
