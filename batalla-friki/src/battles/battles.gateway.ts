@@ -4,71 +4,114 @@ import {
   SubscribeMessage,
   MessageBody,
   ConnectedSocket,
+  OnGatewayDisconnect,
 } from '@nestjs/websockets';
-import { BattlesService } from './battles.service';
 import { Server, Socket } from 'socket.io';
+import { BattlesService } from './battles.service';
 
-@WebSocketGateway({ cors: { origin: '*' } })
-export class BattlesGateway {
+interface QueuedPlayer {
+  socket: Socket;
+  userId: number;
+  characterId: number;
+}
+
+@WebSocketGateway({
+  cors: {
+    origin: '*',
+  },
+})
+export class BattlesGateway implements OnGatewayDisconnect {
   @WebSocketServer()
   server!: Server;
 
+  private matchmakingQueue: QueuedPlayer[] = [];
+
   constructor(private readonly battlesService: BattlesService) {}
 
-  @SubscribeMessage('create-battle')
-  async createBattle(
-    @MessageBody()
-    data: {
-      player1Id: number;
-      player1CharId: number;
-      player2Id: number;
-      player2CharId: number;
-    },
-    @ConnectedSocket() client: Socket,
-  ) {
-    const battle = await this.battlesService.createBattle(
-      data.player1Id,
-      data.player1CharId,
-      data.player2Id,
-      data.player2CharId,
-      client.id,
+  handleDisconnect(client: Socket) {
+    this.matchmakingQueue = this.matchmakingQueue.filter(
+      (player) => player.socket.id !== client.id,
     );
-
-    client.join(battle.id);
-    client.emit('battle-created', battle);
+    console.log(
+      `Cliente desconectado: ${client.id}. Cola actual: ${this.matchmakingQueue.length}`,
+    );
   }
 
-  @SubscribeMessage('join-battle')
-  joinBattle(
-    @MessageBody() data: { battleId: string; userId: number },
+  @SubscribeMessage('find-match')
+  async handleFindMatch(
     @ConnectedSocket() client: Socket,
+    @MessageBody() data: { userId: number; characterId: number },
   ) {
-    const battle = this.battlesService.joinBattle(
-      data.battleId,
-      data.userId,
-      client.id,
+    console.log(`Jugador ${data.userId} busca partida...`);
+    const alreadyInQueue = this.matchmakingQueue.find(
+      (p) => p.userId === data.userId,
     );
+    if (alreadyInQueue) {
+      client.emit('matchmaking-status', 'Ya estás buscando partida...');
+      return;
+    }
 
-    client.join(battle.id);
+    this.matchmakingQueue.push({
+      socket: client,
+      userId: data.userId,
+      characterId: data.characterId,
+    });
 
-    this.server.to(battle.id).emit('user-joined', battle);
+    client.emit('matchmaking-status', 'Buscando oponente... 🕒');
+
+    if (this.matchmakingQueue.length >= 2) {
+      const player1 = this.matchmakingQueue.shift();
+      const player2 = this.matchmakingQueue.shift();
+
+      if (player1 && player2) {
+        console.log(
+          `¡Match encontrado! ${player1.userId} vs ${player2.userId}`,
+        );
+        const battle = await this.battlesService.create({
+          player1Id: player1.userId,
+          player1CharId: player1.characterId,
+          player2Id: player2.userId,
+          player2CharId: player2.characterId,
+        });
+
+        const roomId = `battle-${battle.id}`;
+        player1.socket.join(roomId);
+        player2.socket.join(roomId);
+
+        this.server.to(roomId).emit('battle-created', battle);
+      }
+    }
   }
 
   @SubscribeMessage('attack')
-  async attack(@MessageBody() data: { battleId: string; userId: number }) {
-    try {
-      const result = await this.battlesService.attack(
-        data.battleId,
-        data.userId,
-      );
+  async handleAttack(
+    @MessageBody() data: { battleId: number; userId: number },
+  ) {
+    const battle = await this.battlesService.processTurn(
+      data.battleId,
+      data.userId,
+    );
 
-      if (result.status === 'finished') {
-        this.server.to(data.battleId).emit('battle-finished', result);
-      } else {
-        this.server.to(data.battleId).emit('turn-update', result.battle);
-      }
-    } catch (error) {
-      console.error(error.message);
+    if (battle.status === 'FINISHED') {
+      this.server.to(`battle-${data.battleId}`).emit('battle-finished', {
+        winner: battle.winnerUserId,
+        battle: battle,
+      });
+    } else {
+      this.server.to(`battle-${data.battleId}`).emit('turn-update', battle);
     }
+  }
+
+  @SubscribeMessage('join-battle')
+  async handleJoinBattle(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { battleId: number },
+  ) {
+    const roomId = `battle-${data.battleId}`;
+    client.join(roomId);
+    client.emit(
+      'matchmaking-status',
+      'Te has unido como espectador/reconectado',
+    );
   }
 }

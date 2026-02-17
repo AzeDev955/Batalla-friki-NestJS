@@ -172,42 +172,34 @@
 
     <div class="container hidden" id="lobby-screen">
       <h2 id="welcome-msg">Bienvenido</h2>
-      <div class="row">
-        <div style="flex: 1">
-          <h3>1. Elige tu Personaje</h3>
-          <select id="my-char-select"></select>
-        </div>
-        <div style="flex: 1">
-          <h3>2. Oponente (ID Usuario)</h3>
-          <input
-            type="number"
-            id="opponent-id"
-            placeholder="ID del rival (ej: 2)"
-          />
-          <select id="opponent-char-select">
-            <option value="">-- Personaje Rival (Simulado) --</option>
-          </select>
+
+      <div style="text-align: center">
+        <h3>Elige a tu Campeón</h3>
+        <select
+          id="my-char-select"
+          style="font-size: 1.2rem; padding: 10px; margin-bottom: 20px"
+        ></select>
+
+        <div id="matchmaking-area">
+          <button
+            onclick="findMatch()"
+            style="background-color: #f39c12; font-size: 1.5rem; padding: 20px"
+          >
+            ⚔️ BUSCAR PARTIDA
+          </button>
+          <p
+            id="match-status"
+            style="
+              margin-top: 15px;
+              font-style: italic;
+              color: #f1c40f;
+              min-height: 20px;
+            "
+          ></p>
         </div>
       </div>
-      <br />
-      <button onclick="createBattle()" style="background-color: #f39c12">
-        ⚔️ DESAFIAR (Crear Batalla)
-      </button>
 
-      <hr style="border-color: #555; margin: 20px 0" />
-
-      <h3>O unirse a una existente:</h3>
-      <div class="row">
-        <input
-          type="text"
-          id="join-battle-id"
-          placeholder="ID de Batalla (ej: battle-173...)"
-        />
-        <button onclick="joinBattle()" style="background-color: #3498db">
-          Unirse
-        </button>
-      </div>
-      <br />
+      <hr style="border-color: #555; margin: 30px 0" />
       <button class="secondary-btn" onclick="logout()">Cerrar Sesión</button>
     </div>
 
@@ -504,6 +496,55 @@
         p.className = 'log-entry';
         p.innerText = `>>> ${msg}`;
         logDiv.appendChild(p);
+      }
+
+      // --- SOCKETS ---
+      function connectSocket() {
+        if (socket) return;
+        socket = io(API_URL, {
+          extraHeaders: { Authorization: `Bearer ${token}` },
+        });
+
+        socket.on('connect', () => console.log('WS Conectado'));
+
+        // Recibimos estado de la cola ("Buscando...", "Ya estás en cola")
+        socket.on('matchmaking-status', (msg) => {
+          document.getElementById('match-status').innerText = msg;
+        });
+
+        // ¡PARTIDA ENCONTRADA!
+        socket.on('battle-created', (battle) => {
+          document.getElementById('match-status').innerText =
+            '¡Oponente Encontrado!';
+          setTimeout(() => enterBattleMode(battle), 1000); // Pequeña pausa dramática
+        });
+
+        socket.on('turn-update', (battle) => updateInterface(battle));
+
+        socket.on('battle-finished', (result) => {
+          updateInterface(result.battle);
+          document.getElementById('turn-msg').innerText =
+            `🏆 GANADOR: ID ${result.winner} 🏆`;
+          document.getElementById('btn-attack').disabled = true;
+          document.getElementById('btn-restart').classList.remove('hidden');
+        });
+      }
+
+      // --- NUEVA FUNCIÓN BUSCAR PARTIDA ---
+      function findMatch() {
+        const myChar = document.getElementById('my-char-select').value;
+        if (!myChar) return alert('Elige un personaje primero');
+
+        // Desactivar botón para que no le den 100 veces
+        const btn = document.querySelector('#matchmaking-area button');
+        btn.disabled = true;
+        btn.innerText = 'Buscando...';
+        btn.style.backgroundColor = '#7f8c8d';
+
+        socket.emit('find-match', {
+          userId: currentUser.id,
+          characterId: parseInt(myChar),
+        });
       }
     </script>
   </body>
