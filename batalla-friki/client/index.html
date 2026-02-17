@@ -334,32 +334,29 @@
       }
 
       // --- 3. CARGAR PERSONAJES ---
+      // --- 3. CARGAR PERSONAJES ---
       async function loadCharacters() {
-        // Nota: Si tu ruta GET /characters está protegida, hay que pasar el header Authorization
         const headers = { Authorization: `Bearer ${token}` };
 
         try {
           const res = await fetch(`${API_URL}/characters`, { headers });
-          if (res.status === 401) return logout(); // Token expirado
+          if (res.status === 401) return logout();
 
           const chars = await res.json();
           const selectMy = document.getElementById('my-char-select');
-          const selectOpp = document.getElementById('opponent-char-select');
 
+          // LIMPIEZA: Solo limpiamos NUESTRO select
           selectMy.innerHTML = '';
-          selectOpp.innerHTML =
-            '<option value="">-- Personaje Rival --</option>';
 
           chars.forEach((c) => {
+            // Solo rellenamos NUESTRO select
             const opt = `<option value="${c.id}">${c.name} (HP: ${c.hp}, ATK: ${c.attack})</option>`;
             selectMy.innerHTML += opt;
-            selectOpp.innerHTML += opt;
           });
         } catch (e) {
           console.error('Error cargando personajes', e);
         }
       }
-
       // --- 4. SOCKETS ---
       function connectSocket() {
         if (socket) return; // Ya conectado

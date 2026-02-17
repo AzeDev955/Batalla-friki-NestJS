@@ -1,10 +1,6 @@
-generator client {
-  provider      = "prisma-client"
-  output        = "../generated/prisma"
-  moduleFormat  = "cjs"
-}
 
-generator client2 {
+
+generator client {
   provider      = "prisma-client-js"
   output        = "../generated/prisma2"
   moduleFormat  = "cjs"
