@@ -138,6 +138,7 @@ exports.Prisma.CharacterScalarFieldEnum = {
   id: 'id',
   name: 'name',
   hp: 'hp',
+  baseHp: 'baseHp',
   attack: 'attack',
   level: 'level',
   minLevel: 'minLevel',
@@ -147,10 +148,20 @@ exports.Prisma.CharacterScalarFieldEnum = {
 
 exports.Prisma.BattleScalarFieldEnum = {
   id: 'id',
-  winnerId: 'winnerId',
-  loserId: 'loserId',
+  mode: 'mode',
+  status: 'status',
+  initiatorUserId: 'initiatorUserId',
+  initiatorCharacterId: 'initiatorCharacterId',
+  initiatorCurrentHp: 'initiatorCurrentHp',
+  opponentUserId: 'opponentUserId',
+  opponentCharacterId: 'opponentCharacterId',
+  opponentCurrentHp: 'opponentCurrentHp',
+  turnNumber: 'turnNumber',
+  nextTurn: 'nextTurn',
   log: 'log',
-  createdAt: 'createdAt'
+  winnerUserId: 'winnerUserId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -170,6 +181,21 @@ exports.Prisma.NullsOrder = {
 exports.Role = exports.$Enums.Role = {
   USER: 'USER',
   ADMIN: 'ADMIN'
+};
+
+exports.BattleMode = exports.$Enums.BattleMode = {
+  PVP: 'PVP',
+  PVE: 'PVE'
+};
+
+exports.BattleStatus = exports.$Enums.BattleStatus = {
+  IN_PROGRESS: 'IN_PROGRESS',
+  FINISHED: 'FINISHED'
+};
+
+exports.BattleTurn = exports.$Enums.BattleTurn = {
+  INITIATOR: 'INITIATOR',
+  OPPONENT: 'OPPONENT'
 };
 
 exports.Prisma.ModelName = {

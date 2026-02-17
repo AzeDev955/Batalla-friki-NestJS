@@ -40,11 +40,47 @@ export namespace $Enums {
 
 export type Role = (typeof Role)[keyof typeof Role]
 
+
+export const BattleMode: {
+  PVP: 'PVP',
+  PVE: 'PVE'
+};
+
+export type BattleMode = (typeof BattleMode)[keyof typeof BattleMode]
+
+
+export const BattleStatus: {
+  IN_PROGRESS: 'IN_PROGRESS',
+  FINISHED: 'FINISHED'
+};
+
+export type BattleStatus = (typeof BattleStatus)[keyof typeof BattleStatus]
+
+
+export const BattleTurn: {
+  INITIATOR: 'INITIATOR',
+  OPPONENT: 'OPPONENT'
+};
+
+export type BattleTurn = (typeof BattleTurn)[keyof typeof BattleTurn]
+
 }
 
 export type Role = $Enums.Role
 
 export const Role: typeof $Enums.Role
+
+export type BattleMode = $Enums.BattleMode
+
+export const BattleMode: typeof $Enums.BattleMode
+
+export type BattleStatus = $Enums.BattleStatus
+
+export const BattleStatus: typeof $Enums.BattleStatus
+
+export type BattleTurn = $Enums.BattleTurn
+
+export const BattleTurn: typeof $Enums.BattleTurn
 
 /**
  * ##  Prisma Client ʲˢ
@@ -1056,6 +1092,94 @@ export namespace Prisma {
    */
 
 
+  /**
+   * Count Type UserCountOutputType
+   */
+
+  export type UserCountOutputType = {
+    initiatedBattles: number
+    opponentBattles: number
+    wonBattles: number
+  }
+
+  export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    initiatedBattles?: boolean | UserCountOutputTypeCountInitiatedBattlesArgs
+    opponentBattles?: boolean | UserCountOutputTypeCountOpponentBattlesArgs
+    wonBattles?: boolean | UserCountOutputTypeCountWonBattlesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserCountOutputType
+     */
+    select?: UserCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountInitiatedBattlesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BattleWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountOpponentBattlesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BattleWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountWonBattlesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BattleWhereInput
+  }
+
+
+  /**
+   * Count Type CharacterCountOutputType
+   */
+
+  export type CharacterCountOutputType = {
+    initiatedInBattles: number
+    opponentInBattles: number
+  }
+
+  export type CharacterCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    initiatedInBattles?: boolean | CharacterCountOutputTypeCountInitiatedInBattlesArgs
+    opponentInBattles?: boolean | CharacterCountOutputTypeCountOpponentInBattlesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * CharacterCountOutputType without action
+   */
+  export type CharacterCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CharacterCountOutputType
+     */
+    select?: CharacterCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * CharacterCountOutputType without action
+   */
+  export type CharacterCountOutputTypeCountInitiatedInBattlesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BattleWhereInput
+  }
+
+  /**
+   * CharacterCountOutputType without action
+   */
+  export type CharacterCountOutputTypeCountOpponentInBattlesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BattleWhereInput
+  }
+
 
   /**
    * Models
@@ -1323,6 +1447,10 @@ export namespace Prisma {
     losses?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    initiatedBattles?: boolean | User$initiatedBattlesArgs<ExtArgs>
+    opponentBattles?: boolean | User$opponentBattlesArgs<ExtArgs>
+    wonBattles?: boolean | User$wonBattlesArgs<ExtArgs>
+    _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -1368,10 +1496,22 @@ export namespace Prisma {
   }
 
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "name" | "role" | "level" | "xp" | "wins" | "losses" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    initiatedBattles?: boolean | User$initiatedBattlesArgs<ExtArgs>
+    opponentBattles?: boolean | User$opponentBattlesArgs<ExtArgs>
+    wonBattles?: boolean | User$wonBattlesArgs<ExtArgs>
+    _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type UserIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
-    objects: {}
+    objects: {
+      initiatedBattles: Prisma.$BattlePayload<ExtArgs>[]
+      opponentBattles: Prisma.$BattlePayload<ExtArgs>[]
+      wonBattles: Prisma.$BattlePayload<ExtArgs>[]
+    }
     scalars: $Extensions.GetPayloadResult<{
       id: number
       email: string
@@ -1778,6 +1918,9 @@ export namespace Prisma {
    */
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    initiatedBattles<T extends User$initiatedBattlesArgs<ExtArgs> = {}>(args?: Subset<T, User$initiatedBattlesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BattlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    opponentBattles<T extends User$opponentBattlesArgs<ExtArgs> = {}>(args?: Subset<T, User$opponentBattlesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BattlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    wonBattles<T extends User$wonBattlesArgs<ExtArgs> = {}>(args?: Subset<T, User$wonBattlesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BattlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1835,6 +1978,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter, which User to fetch.
      */
     where: UserWhereUniqueInput
@@ -1853,6 +2000,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter, which User to fetch.
      */
     where: UserWhereUniqueInput
@@ -1870,6 +2021,10 @@ export namespace Prisma {
      * Omit specific fields from the User
      */
     omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
     /**
      * Filter, which User to fetch.
      */
@@ -1919,6 +2074,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter, which User to fetch.
      */
     where?: UserWhereInput
@@ -1967,6 +2126,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter, which Users to fetch.
      */
     where?: UserWhereInput
@@ -2009,6 +2172,10 @@ export namespace Prisma {
      * Omit specific fields from the User
      */
     omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
     /**
      * The data needed to create a User.
      */
@@ -2057,6 +2224,10 @@ export namespace Prisma {
      * Omit specific fields from the User
      */
     omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
     /**
      * The data needed to update a User.
      */
@@ -2124,6 +2295,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * The filter to search for the User to update in case it exists.
      */
     where: UserWhereUniqueInput
@@ -2150,6 +2325,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter which User to delete.
      */
     where: UserWhereUniqueInput
@@ -2170,6 +2349,78 @@ export namespace Prisma {
   }
 
   /**
+   * User.initiatedBattles
+   */
+  export type User$initiatedBattlesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Battle
+     */
+    select?: BattleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Battle
+     */
+    omit?: BattleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BattleInclude<ExtArgs> | null
+    where?: BattleWhereInput
+    orderBy?: BattleOrderByWithRelationInput | BattleOrderByWithRelationInput[]
+    cursor?: BattleWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BattleScalarFieldEnum | BattleScalarFieldEnum[]
+  }
+
+  /**
+   * User.opponentBattles
+   */
+  export type User$opponentBattlesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Battle
+     */
+    select?: BattleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Battle
+     */
+    omit?: BattleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BattleInclude<ExtArgs> | null
+    where?: BattleWhereInput
+    orderBy?: BattleOrderByWithRelationInput | BattleOrderByWithRelationInput[]
+    cursor?: BattleWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BattleScalarFieldEnum | BattleScalarFieldEnum[]
+  }
+
+  /**
+   * User.wonBattles
+   */
+  export type User$wonBattlesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Battle
+     */
+    select?: BattleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Battle
+     */
+    omit?: BattleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BattleInclude<ExtArgs> | null
+    where?: BattleWhereInput
+    orderBy?: BattleOrderByWithRelationInput | BattleOrderByWithRelationInput[]
+    cursor?: BattleWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BattleScalarFieldEnum | BattleScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2181,6 +2432,10 @@ export namespace Prisma {
      * Omit specific fields from the User
      */
     omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
   }
 
 
@@ -2199,6 +2454,7 @@ export namespace Prisma {
   export type CharacterAvgAggregateOutputType = {
     id: number | null
     hp: number | null
+    baseHp: number | null
     attack: number | null
     level: number | null
     minLevel: number | null
@@ -2207,6 +2463,7 @@ export namespace Prisma {
   export type CharacterSumAggregateOutputType = {
     id: number | null
     hp: number | null
+    baseHp: number | null
     attack: number | null
     level: number | null
     minLevel: number | null
@@ -2216,6 +2473,7 @@ export namespace Prisma {
     id: number | null
     name: string | null
     hp: number | null
+    baseHp: number | null
     attack: number | null
     level: number | null
     minLevel: number | null
@@ -2227,6 +2485,7 @@ export namespace Prisma {
     id: number | null
     name: string | null
     hp: number | null
+    baseHp: number | null
     attack: number | null
     level: number | null
     minLevel: number | null
@@ -2238,6 +2497,7 @@ export namespace Prisma {
     id: number
     name: number
     hp: number
+    baseHp: number
     attack: number
     level: number
     minLevel: number
@@ -2250,6 +2510,7 @@ export namespace Prisma {
   export type CharacterAvgAggregateInputType = {
     id?: true
     hp?: true
+    baseHp?: true
     attack?: true
     level?: true
     minLevel?: true
@@ -2258,6 +2519,7 @@ export namespace Prisma {
   export type CharacterSumAggregateInputType = {
     id?: true
     hp?: true
+    baseHp?: true
     attack?: true
     level?: true
     minLevel?: true
@@ -2267,6 +2529,7 @@ export namespace Prisma {
     id?: true
     name?: true
     hp?: true
+    baseHp?: true
     attack?: true
     level?: true
     minLevel?: true
@@ -2278,6 +2541,7 @@ export namespace Prisma {
     id?: true
     name?: true
     hp?: true
+    baseHp?: true
     attack?: true
     level?: true
     minLevel?: true
@@ -2289,6 +2553,7 @@ export namespace Prisma {
     id?: true
     name?: true
     hp?: true
+    baseHp?: true
     attack?: true
     level?: true
     minLevel?: true
@@ -2387,6 +2652,7 @@ export namespace Prisma {
     id: number
     name: string
     hp: number
+    baseHp: number | null
     attack: number
     level: number
     minLevel: number
@@ -2417,17 +2683,22 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     hp?: boolean
+    baseHp?: boolean
     attack?: boolean
     level?: boolean
     minLevel?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    initiatedInBattles?: boolean | Character$initiatedInBattlesArgs<ExtArgs>
+    opponentInBattles?: boolean | Character$opponentInBattlesArgs<ExtArgs>
+    _count?: boolean | CharacterCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["character"]>
 
   export type CharacterSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
     hp?: boolean
+    baseHp?: boolean
     attack?: boolean
     level?: boolean
     minLevel?: boolean
@@ -2439,6 +2710,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     hp?: boolean
+    baseHp?: boolean
     attack?: boolean
     level?: boolean
     minLevel?: boolean
@@ -2450,6 +2722,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     hp?: boolean
+    baseHp?: boolean
     attack?: boolean
     level?: boolean
     minLevel?: boolean
@@ -2457,15 +2730,26 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type CharacterOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "hp" | "attack" | "level" | "minLevel" | "createdAt" | "updatedAt", ExtArgs["result"]["character"]>
+  export type CharacterOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "hp" | "baseHp" | "attack" | "level" | "minLevel" | "createdAt" | "updatedAt", ExtArgs["result"]["character"]>
+  export type CharacterInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    initiatedInBattles?: boolean | Character$initiatedInBattlesArgs<ExtArgs>
+    opponentInBattles?: boolean | Character$opponentInBattlesArgs<ExtArgs>
+    _count?: boolean | CharacterCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type CharacterIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type CharacterIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $CharacterPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Character"
-    objects: {}
+    objects: {
+      initiatedInBattles: Prisma.$BattlePayload<ExtArgs>[]
+      opponentInBattles: Prisma.$BattlePayload<ExtArgs>[]
+    }
     scalars: $Extensions.GetPayloadResult<{
       id: number
       name: string
       hp: number
+      baseHp: number | null
       attack: number
       level: number
       minLevel: number
@@ -2865,6 +3149,8 @@ export namespace Prisma {
    */
   export interface Prisma__CharacterClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    initiatedInBattles<T extends Character$initiatedInBattlesArgs<ExtArgs> = {}>(args?: Subset<T, Character$initiatedInBattlesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BattlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    opponentInBattles<T extends Character$opponentInBattlesArgs<ExtArgs> = {}>(args?: Subset<T, Character$opponentInBattlesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BattlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2897,6 +3183,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Character", 'Int'>
     readonly name: FieldRef<"Character", 'String'>
     readonly hp: FieldRef<"Character", 'Int'>
+    readonly baseHp: FieldRef<"Character", 'Int'>
     readonly attack: FieldRef<"Character", 'Int'>
     readonly level: FieldRef<"Character", 'Int'>
     readonly minLevel: FieldRef<"Character", 'Int'>
@@ -2919,6 +3206,10 @@ export namespace Prisma {
      */
     omit?: CharacterOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CharacterInclude<ExtArgs> | null
+    /**
      * Filter, which Character to fetch.
      */
     where: CharacterWhereUniqueInput
@@ -2937,6 +3228,10 @@ export namespace Prisma {
      */
     omit?: CharacterOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CharacterInclude<ExtArgs> | null
+    /**
      * Filter, which Character to fetch.
      */
     where: CharacterWhereUniqueInput
@@ -2954,6 +3249,10 @@ export namespace Prisma {
      * Omit specific fields from the Character
      */
     omit?: CharacterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CharacterInclude<ExtArgs> | null
     /**
      * Filter, which Character to fetch.
      */
@@ -3003,6 +3302,10 @@ export namespace Prisma {
      */
     omit?: CharacterOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CharacterInclude<ExtArgs> | null
+    /**
      * Filter, which Character to fetch.
      */
     where?: CharacterWhereInput
@@ -3051,6 +3354,10 @@ export namespace Prisma {
      */
     omit?: CharacterOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CharacterInclude<ExtArgs> | null
+    /**
      * Filter, which Characters to fetch.
      */
     where?: CharacterWhereInput
@@ -3093,6 +3400,10 @@ export namespace Prisma {
      * Omit specific fields from the Character
      */
     omit?: CharacterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CharacterInclude<ExtArgs> | null
     /**
      * The data needed to create a Character.
      */
@@ -3141,6 +3452,10 @@ export namespace Prisma {
      * Omit specific fields from the Character
      */
     omit?: CharacterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CharacterInclude<ExtArgs> | null
     /**
      * The data needed to update a Character.
      */
@@ -3208,6 +3523,10 @@ export namespace Prisma {
      */
     omit?: CharacterOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CharacterInclude<ExtArgs> | null
+    /**
      * The filter to search for the Character to update in case it exists.
      */
     where: CharacterWhereUniqueInput
@@ -3234,6 +3553,10 @@ export namespace Prisma {
      */
     omit?: CharacterOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CharacterInclude<ExtArgs> | null
+    /**
      * Filter which Character to delete.
      */
     where: CharacterWhereUniqueInput
@@ -3254,6 +3577,54 @@ export namespace Prisma {
   }
 
   /**
+   * Character.initiatedInBattles
+   */
+  export type Character$initiatedInBattlesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Battle
+     */
+    select?: BattleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Battle
+     */
+    omit?: BattleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BattleInclude<ExtArgs> | null
+    where?: BattleWhereInput
+    orderBy?: BattleOrderByWithRelationInput | BattleOrderByWithRelationInput[]
+    cursor?: BattleWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BattleScalarFieldEnum | BattleScalarFieldEnum[]
+  }
+
+  /**
+   * Character.opponentInBattles
+   */
+  export type Character$opponentInBattlesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Battle
+     */
+    select?: BattleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Battle
+     */
+    omit?: BattleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BattleInclude<ExtArgs> | null
+    where?: BattleWhereInput
+    orderBy?: BattleOrderByWithRelationInput | BattleOrderByWithRelationInput[]
+    cursor?: BattleWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BattleScalarFieldEnum | BattleScalarFieldEnum[]
+  }
+
+  /**
    * Character without action
    */
   export type CharacterDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3265,6 +3636,10 @@ export namespace Prisma {
      * Omit specific fields from the Character
      */
     omit?: CharacterOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CharacterInclude<ExtArgs> | null
   }
 
 
@@ -3282,72 +3657,156 @@ export namespace Prisma {
 
   export type BattleAvgAggregateOutputType = {
     id: number | null
-    winnerId: number | null
-    loserId: number | null
+    initiatorUserId: number | null
+    initiatorCharacterId: number | null
+    initiatorCurrentHp: number | null
+    opponentUserId: number | null
+    opponentCharacterId: number | null
+    opponentCurrentHp: number | null
+    turnNumber: number | null
+    winnerUserId: number | null
   }
 
   export type BattleSumAggregateOutputType = {
     id: number | null
-    winnerId: number | null
-    loserId: number | null
+    initiatorUserId: number | null
+    initiatorCharacterId: number | null
+    initiatorCurrentHp: number | null
+    opponentUserId: number | null
+    opponentCharacterId: number | null
+    opponentCurrentHp: number | null
+    turnNumber: number | null
+    winnerUserId: number | null
   }
 
   export type BattleMinAggregateOutputType = {
     id: number | null
-    winnerId: number | null
-    loserId: number | null
+    mode: $Enums.BattleMode | null
+    status: $Enums.BattleStatus | null
+    initiatorUserId: number | null
+    initiatorCharacterId: number | null
+    initiatorCurrentHp: number | null
+    opponentUserId: number | null
+    opponentCharacterId: number | null
+    opponentCurrentHp: number | null
+    turnNumber: number | null
+    nextTurn: $Enums.BattleTurn | null
+    winnerUserId: number | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type BattleMaxAggregateOutputType = {
     id: number | null
-    winnerId: number | null
-    loserId: number | null
+    mode: $Enums.BattleMode | null
+    status: $Enums.BattleStatus | null
+    initiatorUserId: number | null
+    initiatorCharacterId: number | null
+    initiatorCurrentHp: number | null
+    opponentUserId: number | null
+    opponentCharacterId: number | null
+    opponentCurrentHp: number | null
+    turnNumber: number | null
+    nextTurn: $Enums.BattleTurn | null
+    winnerUserId: number | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type BattleCountAggregateOutputType = {
     id: number
-    winnerId: number
-    loserId: number
+    mode: number
+    status: number
+    initiatorUserId: number
+    initiatorCharacterId: number
+    initiatorCurrentHp: number
+    opponentUserId: number
+    opponentCharacterId: number
+    opponentCurrentHp: number
+    turnNumber: number
+    nextTurn: number
     log: number
+    winnerUserId: number
     createdAt: number
+    updatedAt: number
     _all: number
   }
 
 
   export type BattleAvgAggregateInputType = {
     id?: true
-    winnerId?: true
-    loserId?: true
+    initiatorUserId?: true
+    initiatorCharacterId?: true
+    initiatorCurrentHp?: true
+    opponentUserId?: true
+    opponentCharacterId?: true
+    opponentCurrentHp?: true
+    turnNumber?: true
+    winnerUserId?: true
   }
 
   export type BattleSumAggregateInputType = {
     id?: true
-    winnerId?: true
-    loserId?: true
+    initiatorUserId?: true
+    initiatorCharacterId?: true
+    initiatorCurrentHp?: true
+    opponentUserId?: true
+    opponentCharacterId?: true
+    opponentCurrentHp?: true
+    turnNumber?: true
+    winnerUserId?: true
   }
 
   export type BattleMinAggregateInputType = {
     id?: true
-    winnerId?: true
-    loserId?: true
+    mode?: true
+    status?: true
+    initiatorUserId?: true
+    initiatorCharacterId?: true
+    initiatorCurrentHp?: true
+    opponentUserId?: true
+    opponentCharacterId?: true
+    opponentCurrentHp?: true
+    turnNumber?: true
+    nextTurn?: true
+    winnerUserId?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type BattleMaxAggregateInputType = {
     id?: true
-    winnerId?: true
-    loserId?: true
+    mode?: true
+    status?: true
+    initiatorUserId?: true
+    initiatorCharacterId?: true
+    initiatorCurrentHp?: true
+    opponentUserId?: true
+    opponentCharacterId?: true
+    opponentCurrentHp?: true
+    turnNumber?: true
+    nextTurn?: true
+    winnerUserId?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type BattleCountAggregateInputType = {
     id?: true
-    winnerId?: true
-    loserId?: true
+    mode?: true
+    status?: true
+    initiatorUserId?: true
+    initiatorCharacterId?: true
+    initiatorCurrentHp?: true
+    opponentUserId?: true
+    opponentCharacterId?: true
+    opponentCurrentHp?: true
+    turnNumber?: true
+    nextTurn?: true
     log?: true
+    winnerUserId?: true
     createdAt?: true
+    updatedAt?: true
     _all?: true
   }
 
@@ -3439,10 +3898,20 @@ export namespace Prisma {
 
   export type BattleGroupByOutputType = {
     id: number
-    winnerId: number
-    loserId: number
+    mode: $Enums.BattleMode
+    status: $Enums.BattleStatus
+    initiatorUserId: number
+    initiatorCharacterId: number
+    initiatorCurrentHp: number
+    opponentUserId: number
+    opponentCharacterId: number
+    opponentCurrentHp: number
+    turnNumber: number
+    nextTurn: $Enums.BattleTurn
     log: string[]
+    winnerUserId: number | null
     createdAt: Date
+    updatedAt: Date
     _count: BattleCountAggregateOutputType | null
     _avg: BattleAvgAggregateOutputType | null
     _sum: BattleSumAggregateOutputType | null
@@ -3466,47 +3935,139 @@ export namespace Prisma {
 
   export type BattleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    winnerId?: boolean
-    loserId?: boolean
+    mode?: boolean
+    status?: boolean
+    initiatorUserId?: boolean
+    initiatorCharacterId?: boolean
+    initiatorCurrentHp?: boolean
+    opponentUserId?: boolean
+    opponentCharacterId?: boolean
+    opponentCurrentHp?: boolean
+    turnNumber?: boolean
+    nextTurn?: boolean
     log?: boolean
+    winnerUserId?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
+    initiatorUser?: boolean | UserDefaultArgs<ExtArgs>
+    opponentUser?: boolean | UserDefaultArgs<ExtArgs>
+    winnerUser?: boolean | Battle$winnerUserArgs<ExtArgs>
+    initiatorCharacter?: boolean | CharacterDefaultArgs<ExtArgs>
+    opponentCharacter?: boolean | CharacterDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["battle"]>
 
   export type BattleSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    winnerId?: boolean
-    loserId?: boolean
+    mode?: boolean
+    status?: boolean
+    initiatorUserId?: boolean
+    initiatorCharacterId?: boolean
+    initiatorCurrentHp?: boolean
+    opponentUserId?: boolean
+    opponentCharacterId?: boolean
+    opponentCurrentHp?: boolean
+    turnNumber?: boolean
+    nextTurn?: boolean
     log?: boolean
+    winnerUserId?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
+    initiatorUser?: boolean | UserDefaultArgs<ExtArgs>
+    opponentUser?: boolean | UserDefaultArgs<ExtArgs>
+    winnerUser?: boolean | Battle$winnerUserArgs<ExtArgs>
+    initiatorCharacter?: boolean | CharacterDefaultArgs<ExtArgs>
+    opponentCharacter?: boolean | CharacterDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["battle"]>
 
   export type BattleSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    winnerId?: boolean
-    loserId?: boolean
+    mode?: boolean
+    status?: boolean
+    initiatorUserId?: boolean
+    initiatorCharacterId?: boolean
+    initiatorCurrentHp?: boolean
+    opponentUserId?: boolean
+    opponentCharacterId?: boolean
+    opponentCurrentHp?: boolean
+    turnNumber?: boolean
+    nextTurn?: boolean
     log?: boolean
+    winnerUserId?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
+    initiatorUser?: boolean | UserDefaultArgs<ExtArgs>
+    opponentUser?: boolean | UserDefaultArgs<ExtArgs>
+    winnerUser?: boolean | Battle$winnerUserArgs<ExtArgs>
+    initiatorCharacter?: boolean | CharacterDefaultArgs<ExtArgs>
+    opponentCharacter?: boolean | CharacterDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["battle"]>
 
   export type BattleSelectScalar = {
     id?: boolean
-    winnerId?: boolean
-    loserId?: boolean
+    mode?: boolean
+    status?: boolean
+    initiatorUserId?: boolean
+    initiatorCharacterId?: boolean
+    initiatorCurrentHp?: boolean
+    opponentUserId?: boolean
+    opponentCharacterId?: boolean
+    opponentCurrentHp?: boolean
+    turnNumber?: boolean
+    nextTurn?: boolean
     log?: boolean
+    winnerUserId?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }
 
-  export type BattleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "winnerId" | "loserId" | "log" | "createdAt", ExtArgs["result"]["battle"]>
+  export type BattleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "mode" | "status" | "initiatorUserId" | "initiatorCharacterId" | "initiatorCurrentHp" | "opponentUserId" | "opponentCharacterId" | "opponentCurrentHp" | "turnNumber" | "nextTurn" | "log" | "winnerUserId" | "createdAt" | "updatedAt", ExtArgs["result"]["battle"]>
+  export type BattleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    initiatorUser?: boolean | UserDefaultArgs<ExtArgs>
+    opponentUser?: boolean | UserDefaultArgs<ExtArgs>
+    winnerUser?: boolean | Battle$winnerUserArgs<ExtArgs>
+    initiatorCharacter?: boolean | CharacterDefaultArgs<ExtArgs>
+    opponentCharacter?: boolean | CharacterDefaultArgs<ExtArgs>
+  }
+  export type BattleIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    initiatorUser?: boolean | UserDefaultArgs<ExtArgs>
+    opponentUser?: boolean | UserDefaultArgs<ExtArgs>
+    winnerUser?: boolean | Battle$winnerUserArgs<ExtArgs>
+    initiatorCharacter?: boolean | CharacterDefaultArgs<ExtArgs>
+    opponentCharacter?: boolean | CharacterDefaultArgs<ExtArgs>
+  }
+  export type BattleIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    initiatorUser?: boolean | UserDefaultArgs<ExtArgs>
+    opponentUser?: boolean | UserDefaultArgs<ExtArgs>
+    winnerUser?: boolean | Battle$winnerUserArgs<ExtArgs>
+    initiatorCharacter?: boolean | CharacterDefaultArgs<ExtArgs>
+    opponentCharacter?: boolean | CharacterDefaultArgs<ExtArgs>
+  }
 
   export type $BattlePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Battle"
-    objects: {}
+    objects: {
+      initiatorUser: Prisma.$UserPayload<ExtArgs>
+      opponentUser: Prisma.$UserPayload<ExtArgs>
+      winnerUser: Prisma.$UserPayload<ExtArgs> | null
+      initiatorCharacter: Prisma.$CharacterPayload<ExtArgs>
+      opponentCharacter: Prisma.$CharacterPayload<ExtArgs>
+    }
     scalars: $Extensions.GetPayloadResult<{
       id: number
-      winnerId: number
-      loserId: number
+      mode: $Enums.BattleMode
+      status: $Enums.BattleStatus
+      initiatorUserId: number
+      initiatorCharacterId: number
+      initiatorCurrentHp: number
+      opponentUserId: number
+      opponentCharacterId: number
+      opponentCurrentHp: number
+      turnNumber: number
+      nextTurn: $Enums.BattleTurn
       log: string[]
+      winnerUserId: number | null
       createdAt: Date
+      updatedAt: Date
     }, ExtArgs["result"]["battle"]>
     composites: {}
   }
@@ -3901,6 +4462,11 @@ export namespace Prisma {
    */
   export interface Prisma__BattleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    initiatorUser<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    opponentUser<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    winnerUser<T extends Battle$winnerUserArgs<ExtArgs> = {}>(args?: Subset<T, Battle$winnerUserArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    initiatorCharacter<T extends CharacterDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CharacterDefaultArgs<ExtArgs>>): Prisma__CharacterClient<$Result.GetResult<Prisma.$CharacterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    opponentCharacter<T extends CharacterDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CharacterDefaultArgs<ExtArgs>>): Prisma__CharacterClient<$Result.GetResult<Prisma.$CharacterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3931,10 +4497,20 @@ export namespace Prisma {
    */
   interface BattleFieldRefs {
     readonly id: FieldRef<"Battle", 'Int'>
-    readonly winnerId: FieldRef<"Battle", 'Int'>
-    readonly loserId: FieldRef<"Battle", 'Int'>
+    readonly mode: FieldRef<"Battle", 'BattleMode'>
+    readonly status: FieldRef<"Battle", 'BattleStatus'>
+    readonly initiatorUserId: FieldRef<"Battle", 'Int'>
+    readonly initiatorCharacterId: FieldRef<"Battle", 'Int'>
+    readonly initiatorCurrentHp: FieldRef<"Battle", 'Int'>
+    readonly opponentUserId: FieldRef<"Battle", 'Int'>
+    readonly opponentCharacterId: FieldRef<"Battle", 'Int'>
+    readonly opponentCurrentHp: FieldRef<"Battle", 'Int'>
+    readonly turnNumber: FieldRef<"Battle", 'Int'>
+    readonly nextTurn: FieldRef<"Battle", 'BattleTurn'>
     readonly log: FieldRef<"Battle", 'String[]'>
+    readonly winnerUserId: FieldRef<"Battle", 'Int'>
     readonly createdAt: FieldRef<"Battle", 'DateTime'>
+    readonly updatedAt: FieldRef<"Battle", 'DateTime'>
   }
     
 
@@ -3951,6 +4527,10 @@ export namespace Prisma {
      * Omit specific fields from the Battle
      */
     omit?: BattleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BattleInclude<ExtArgs> | null
     /**
      * Filter, which Battle to fetch.
      */
@@ -3970,6 +4550,10 @@ export namespace Prisma {
      */
     omit?: BattleOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BattleInclude<ExtArgs> | null
+    /**
      * Filter, which Battle to fetch.
      */
     where: BattleWhereUniqueInput
@@ -3987,6 +4571,10 @@ export namespace Prisma {
      * Omit specific fields from the Battle
      */
     omit?: BattleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BattleInclude<ExtArgs> | null
     /**
      * Filter, which Battle to fetch.
      */
@@ -4036,6 +4624,10 @@ export namespace Prisma {
      */
     omit?: BattleOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BattleInclude<ExtArgs> | null
+    /**
      * Filter, which Battle to fetch.
      */
     where?: BattleWhereInput
@@ -4084,6 +4676,10 @@ export namespace Prisma {
      */
     omit?: BattleOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BattleInclude<ExtArgs> | null
+    /**
      * Filter, which Battles to fetch.
      */
     where?: BattleWhereInput
@@ -4127,6 +4723,10 @@ export namespace Prisma {
      */
     omit?: BattleOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BattleInclude<ExtArgs> | null
+    /**
      * The data needed to create a Battle.
      */
     data: XOR<BattleCreateInput, BattleUncheckedCreateInput>
@@ -4160,6 +4760,10 @@ export namespace Prisma {
      */
     data: BattleCreateManyInput | BattleCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BattleIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -4174,6 +4778,10 @@ export namespace Prisma {
      * Omit specific fields from the Battle
      */
     omit?: BattleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BattleInclude<ExtArgs> | null
     /**
      * The data needed to update a Battle.
      */
@@ -4226,6 +4834,10 @@ export namespace Prisma {
      * Limit how many Battles to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BattleIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -4240,6 +4852,10 @@ export namespace Prisma {
      * Omit specific fields from the Battle
      */
     omit?: BattleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BattleInclude<ExtArgs> | null
     /**
      * The filter to search for the Battle to update in case it exists.
      */
@@ -4267,6 +4883,10 @@ export namespace Prisma {
      */
     omit?: BattleOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BattleInclude<ExtArgs> | null
+    /**
      * Filter which Battle to delete.
      */
     where: BattleWhereUniqueInput
@@ -4287,6 +4907,25 @@ export namespace Prisma {
   }
 
   /**
+   * Battle.winnerUser
+   */
+  export type Battle$winnerUserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
    * Battle without action
    */
   export type BattleDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4298,6 +4937,10 @@ export namespace Prisma {
      * Omit specific fields from the Battle
      */
     omit?: BattleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BattleInclude<ExtArgs> | null
   }
 
 
@@ -4336,6 +4979,7 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     hp: 'hp',
+    baseHp: 'baseHp',
     attack: 'attack',
     level: 'level',
     minLevel: 'minLevel',
@@ -4348,10 +4992,20 @@ export namespace Prisma {
 
   export const BattleScalarFieldEnum: {
     id: 'id',
-    winnerId: 'winnerId',
-    loserId: 'loserId',
+    mode: 'mode',
+    status: 'status',
+    initiatorUserId: 'initiatorUserId',
+    initiatorCharacterId: 'initiatorCharacterId',
+    initiatorCurrentHp: 'initiatorCurrentHp',
+    opponentUserId: 'opponentUserId',
+    opponentCharacterId: 'opponentCharacterId',
+    opponentCurrentHp: 'opponentCurrentHp',
+    turnNumber: 'turnNumber',
+    nextTurn: 'nextTurn',
     log: 'log',
-    createdAt: 'createdAt'
+    winnerUserId: 'winnerUserId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
   };
 
   export type BattleScalarFieldEnum = (typeof BattleScalarFieldEnum)[keyof typeof BattleScalarFieldEnum]
@@ -4443,6 +5097,48 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'BattleMode'
+   */
+  export type EnumBattleModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BattleMode'>
+    
+
+
+  /**
+   * Reference to a field of type 'BattleMode[]'
+   */
+  export type ListEnumBattleModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BattleMode[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'BattleStatus'
+   */
+  export type EnumBattleStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BattleStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'BattleStatus[]'
+   */
+  export type ListEnumBattleStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BattleStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'BattleTurn'
+   */
+  export type EnumBattleTurnFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BattleTurn'>
+    
+
+
+  /**
+   * Reference to a field of type 'BattleTurn[]'
+   */
+  export type ListEnumBattleTurnFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BattleTurn[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -4474,6 +5170,9 @@ export namespace Prisma {
     losses?: IntFilter<"User"> | number
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    initiatedBattles?: BattleListRelationFilter
+    opponentBattles?: BattleListRelationFilter
+    wonBattles?: BattleListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -4488,6 +5187,9 @@ export namespace Prisma {
     losses?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    initiatedBattles?: BattleOrderByRelationAggregateInput
+    opponentBattles?: BattleOrderByRelationAggregateInput
+    wonBattles?: BattleOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -4505,6 +5207,9 @@ export namespace Prisma {
     losses?: IntFilter<"User"> | number
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    initiatedBattles?: BattleListRelationFilter
+    opponentBattles?: BattleListRelationFilter
+    wonBattles?: BattleListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -4550,22 +5255,28 @@ export namespace Prisma {
     id?: IntFilter<"Character"> | number
     name?: StringFilter<"Character"> | string
     hp?: IntFilter<"Character"> | number
+    baseHp?: IntNullableFilter<"Character"> | number | null
     attack?: IntFilter<"Character"> | number
     level?: IntFilter<"Character"> | number
     minLevel?: IntFilter<"Character"> | number
     createdAt?: DateTimeFilter<"Character"> | Date | string
     updatedAt?: DateTimeFilter<"Character"> | Date | string
+    initiatedInBattles?: BattleListRelationFilter
+    opponentInBattles?: BattleListRelationFilter
   }
 
   export type CharacterOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
     hp?: SortOrder
+    baseHp?: SortOrderInput | SortOrder
     attack?: SortOrder
     level?: SortOrder
     minLevel?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    initiatedInBattles?: BattleOrderByRelationAggregateInput
+    opponentInBattles?: BattleOrderByRelationAggregateInput
   }
 
   export type CharacterWhereUniqueInput = Prisma.AtLeast<{
@@ -4575,17 +5286,21 @@ export namespace Prisma {
     OR?: CharacterWhereInput[]
     NOT?: CharacterWhereInput | CharacterWhereInput[]
     hp?: IntFilter<"Character"> | number
+    baseHp?: IntNullableFilter<"Character"> | number | null
     attack?: IntFilter<"Character"> | number
     level?: IntFilter<"Character"> | number
     minLevel?: IntFilter<"Character"> | number
     createdAt?: DateTimeFilter<"Character"> | Date | string
     updatedAt?: DateTimeFilter<"Character"> | Date | string
+    initiatedInBattles?: BattleListRelationFilter
+    opponentInBattles?: BattleListRelationFilter
   }, "id" | "name">
 
   export type CharacterOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
     hp?: SortOrder
+    baseHp?: SortOrderInput | SortOrder
     attack?: SortOrder
     level?: SortOrder
     minLevel?: SortOrder
@@ -4605,6 +5320,7 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter<"Character"> | number
     name?: StringWithAggregatesFilter<"Character"> | string
     hp?: IntWithAggregatesFilter<"Character"> | number
+    baseHp?: IntNullableWithAggregatesFilter<"Character"> | number | null
     attack?: IntWithAggregatesFilter<"Character"> | number
     level?: IntWithAggregatesFilter<"Character"> | number
     minLevel?: IntWithAggregatesFilter<"Character"> | number
@@ -4617,18 +5333,48 @@ export namespace Prisma {
     OR?: BattleWhereInput[]
     NOT?: BattleWhereInput | BattleWhereInput[]
     id?: IntFilter<"Battle"> | number
-    winnerId?: IntFilter<"Battle"> | number
-    loserId?: IntFilter<"Battle"> | number
+    mode?: EnumBattleModeFilter<"Battle"> | $Enums.BattleMode
+    status?: EnumBattleStatusFilter<"Battle"> | $Enums.BattleStatus
+    initiatorUserId?: IntFilter<"Battle"> | number
+    initiatorCharacterId?: IntFilter<"Battle"> | number
+    initiatorCurrentHp?: IntFilter<"Battle"> | number
+    opponentUserId?: IntFilter<"Battle"> | number
+    opponentCharacterId?: IntFilter<"Battle"> | number
+    opponentCurrentHp?: IntFilter<"Battle"> | number
+    turnNumber?: IntFilter<"Battle"> | number
+    nextTurn?: EnumBattleTurnFilter<"Battle"> | $Enums.BattleTurn
     log?: StringNullableListFilter<"Battle">
+    winnerUserId?: IntNullableFilter<"Battle"> | number | null
     createdAt?: DateTimeFilter<"Battle"> | Date | string
+    updatedAt?: DateTimeFilter<"Battle"> | Date | string
+    initiatorUser?: XOR<UserScalarRelationFilter, UserWhereInput>
+    opponentUser?: XOR<UserScalarRelationFilter, UserWhereInput>
+    winnerUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    initiatorCharacter?: XOR<CharacterScalarRelationFilter, CharacterWhereInput>
+    opponentCharacter?: XOR<CharacterScalarRelationFilter, CharacterWhereInput>
   }
 
   export type BattleOrderByWithRelationInput = {
     id?: SortOrder
-    winnerId?: SortOrder
-    loserId?: SortOrder
+    mode?: SortOrder
+    status?: SortOrder
+    initiatorUserId?: SortOrder
+    initiatorCharacterId?: SortOrder
+    initiatorCurrentHp?: SortOrder
+    opponentUserId?: SortOrder
+    opponentCharacterId?: SortOrder
+    opponentCurrentHp?: SortOrder
+    turnNumber?: SortOrder
+    nextTurn?: SortOrder
     log?: SortOrder
+    winnerUserId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
+    initiatorUser?: UserOrderByWithRelationInput
+    opponentUser?: UserOrderByWithRelationInput
+    winnerUser?: UserOrderByWithRelationInput
+    initiatorCharacter?: CharacterOrderByWithRelationInput
+    opponentCharacter?: CharacterOrderByWithRelationInput
   }
 
   export type BattleWhereUniqueInput = Prisma.AtLeast<{
@@ -4636,18 +5382,43 @@ export namespace Prisma {
     AND?: BattleWhereInput | BattleWhereInput[]
     OR?: BattleWhereInput[]
     NOT?: BattleWhereInput | BattleWhereInput[]
-    winnerId?: IntFilter<"Battle"> | number
-    loserId?: IntFilter<"Battle"> | number
+    mode?: EnumBattleModeFilter<"Battle"> | $Enums.BattleMode
+    status?: EnumBattleStatusFilter<"Battle"> | $Enums.BattleStatus
+    initiatorUserId?: IntFilter<"Battle"> | number
+    initiatorCharacterId?: IntFilter<"Battle"> | number
+    initiatorCurrentHp?: IntFilter<"Battle"> | number
+    opponentUserId?: IntFilter<"Battle"> | number
+    opponentCharacterId?: IntFilter<"Battle"> | number
+    opponentCurrentHp?: IntFilter<"Battle"> | number
+    turnNumber?: IntFilter<"Battle"> | number
+    nextTurn?: EnumBattleTurnFilter<"Battle"> | $Enums.BattleTurn
     log?: StringNullableListFilter<"Battle">
+    winnerUserId?: IntNullableFilter<"Battle"> | number | null
     createdAt?: DateTimeFilter<"Battle"> | Date | string
+    updatedAt?: DateTimeFilter<"Battle"> | Date | string
+    initiatorUser?: XOR<UserScalarRelationFilter, UserWhereInput>
+    opponentUser?: XOR<UserScalarRelationFilter, UserWhereInput>
+    winnerUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    initiatorCharacter?: XOR<CharacterScalarRelationFilter, CharacterWhereInput>
+    opponentCharacter?: XOR<CharacterScalarRelationFilter, CharacterWhereInput>
   }, "id">
 
   export type BattleOrderByWithAggregationInput = {
     id?: SortOrder
-    winnerId?: SortOrder
-    loserId?: SortOrder
+    mode?: SortOrder
+    status?: SortOrder
+    initiatorUserId?: SortOrder
+    initiatorCharacterId?: SortOrder
+    initiatorCurrentHp?: SortOrder
+    opponentUserId?: SortOrder
+    opponentCharacterId?: SortOrder
+    opponentCurrentHp?: SortOrder
+    turnNumber?: SortOrder
+    nextTurn?: SortOrder
     log?: SortOrder
+    winnerUserId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
     _count?: BattleCountOrderByAggregateInput
     _avg?: BattleAvgOrderByAggregateInput
     _max?: BattleMaxOrderByAggregateInput
@@ -4660,10 +5431,20 @@ export namespace Prisma {
     OR?: BattleScalarWhereWithAggregatesInput[]
     NOT?: BattleScalarWhereWithAggregatesInput | BattleScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"Battle"> | number
-    winnerId?: IntWithAggregatesFilter<"Battle"> | number
-    loserId?: IntWithAggregatesFilter<"Battle"> | number
+    mode?: EnumBattleModeWithAggregatesFilter<"Battle"> | $Enums.BattleMode
+    status?: EnumBattleStatusWithAggregatesFilter<"Battle"> | $Enums.BattleStatus
+    initiatorUserId?: IntWithAggregatesFilter<"Battle"> | number
+    initiatorCharacterId?: IntWithAggregatesFilter<"Battle"> | number
+    initiatorCurrentHp?: IntWithAggregatesFilter<"Battle"> | number
+    opponentUserId?: IntWithAggregatesFilter<"Battle"> | number
+    opponentCharacterId?: IntWithAggregatesFilter<"Battle"> | number
+    opponentCurrentHp?: IntWithAggregatesFilter<"Battle"> | number
+    turnNumber?: IntWithAggregatesFilter<"Battle"> | number
+    nextTurn?: EnumBattleTurnWithAggregatesFilter<"Battle"> | $Enums.BattleTurn
     log?: StringNullableListFilter<"Battle">
+    winnerUserId?: IntNullableWithAggregatesFilter<"Battle"> | number | null
     createdAt?: DateTimeWithAggregatesFilter<"Battle"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Battle"> | Date | string
   }
 
   export type UserCreateInput = {
@@ -4677,6 +5458,9 @@ export namespace Prisma {
     losses?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    initiatedBattles?: BattleCreateNestedManyWithoutInitiatorUserInput
+    opponentBattles?: BattleCreateNestedManyWithoutOpponentUserInput
+    wonBattles?: BattleCreateNestedManyWithoutWinnerUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -4691,6 +5475,9 @@ export namespace Prisma {
     losses?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    initiatedBattles?: BattleUncheckedCreateNestedManyWithoutInitiatorUserInput
+    opponentBattles?: BattleUncheckedCreateNestedManyWithoutOpponentUserInput
+    wonBattles?: BattleUncheckedCreateNestedManyWithoutWinnerUserInput
   }
 
   export type UserUpdateInput = {
@@ -4704,6 +5491,9 @@ export namespace Prisma {
     losses?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiatedBattles?: BattleUpdateManyWithoutInitiatorUserNestedInput
+    opponentBattles?: BattleUpdateManyWithoutOpponentUserNestedInput
+    wonBattles?: BattleUpdateManyWithoutWinnerUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -4718,6 +5508,9 @@ export namespace Prisma {
     losses?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiatedBattles?: BattleUncheckedUpdateManyWithoutInitiatorUserNestedInput
+    opponentBattles?: BattleUncheckedUpdateManyWithoutOpponentUserNestedInput
+    wonBattles?: BattleUncheckedUpdateManyWithoutWinnerUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -4764,49 +5557,62 @@ export namespace Prisma {
   export type CharacterCreateInput = {
     name: string
     hp: number
+    baseHp?: number | null
     attack: number
     level: number
     minLevel?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    initiatedInBattles?: BattleCreateNestedManyWithoutInitiatorCharacterInput
+    opponentInBattles?: BattleCreateNestedManyWithoutOpponentCharacterInput
   }
 
   export type CharacterUncheckedCreateInput = {
     id?: number
     name: string
     hp: number
+    baseHp?: number | null
     attack: number
     level: number
     minLevel?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    initiatedInBattles?: BattleUncheckedCreateNestedManyWithoutInitiatorCharacterInput
+    opponentInBattles?: BattleUncheckedCreateNestedManyWithoutOpponentCharacterInput
   }
 
   export type CharacterUpdateInput = {
     name?: StringFieldUpdateOperationsInput | string
     hp?: IntFieldUpdateOperationsInput | number
+    baseHp?: NullableIntFieldUpdateOperationsInput | number | null
     attack?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
     minLevel?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiatedInBattles?: BattleUpdateManyWithoutInitiatorCharacterNestedInput
+    opponentInBattles?: BattleUpdateManyWithoutOpponentCharacterNestedInput
   }
 
   export type CharacterUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     hp?: IntFieldUpdateOperationsInput | number
+    baseHp?: NullableIntFieldUpdateOperationsInput | number | null
     attack?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
     minLevel?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiatedInBattles?: BattleUncheckedUpdateManyWithoutInitiatorCharacterNestedInput
+    opponentInBattles?: BattleUncheckedUpdateManyWithoutOpponentCharacterNestedInput
   }
 
   export type CharacterCreateManyInput = {
     id?: number
     name: string
     hp: number
+    baseHp?: number | null
     attack: number
     level: number
     minLevel?: number
@@ -4817,6 +5623,7 @@ export namespace Prisma {
   export type CharacterUpdateManyMutationInput = {
     name?: StringFieldUpdateOperationsInput | string
     hp?: IntFieldUpdateOperationsInput | number
+    baseHp?: NullableIntFieldUpdateOperationsInput | number | null
     attack?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
     minLevel?: IntFieldUpdateOperationsInput | number
@@ -4828,6 +5635,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     name?: StringFieldUpdateOperationsInput | string
     hp?: IntFieldUpdateOperationsInput | number
+    baseHp?: NullableIntFieldUpdateOperationsInput | number | null
     attack?: IntFieldUpdateOperationsInput | number
     level?: IntFieldUpdateOperationsInput | number
     minLevel?: IntFieldUpdateOperationsInput | number
@@ -4836,56 +5644,121 @@ export namespace Prisma {
   }
 
   export type BattleCreateInput = {
-    winnerId: number
-    loserId: number
+    mode: $Enums.BattleMode
+    status?: $Enums.BattleStatus
+    initiatorCurrentHp: number
+    opponentCurrentHp: number
+    turnNumber?: number
+    nextTurn?: $Enums.BattleTurn
     log?: BattleCreatelogInput | string[]
     createdAt?: Date | string
+    updatedAt?: Date | string
+    initiatorUser: UserCreateNestedOneWithoutInitiatedBattlesInput
+    opponentUser: UserCreateNestedOneWithoutOpponentBattlesInput
+    winnerUser?: UserCreateNestedOneWithoutWonBattlesInput
+    initiatorCharacter: CharacterCreateNestedOneWithoutInitiatedInBattlesInput
+    opponentCharacter: CharacterCreateNestedOneWithoutOpponentInBattlesInput
   }
 
   export type BattleUncheckedCreateInput = {
     id?: number
-    winnerId: number
-    loserId: number
+    mode: $Enums.BattleMode
+    status?: $Enums.BattleStatus
+    initiatorUserId: number
+    initiatorCharacterId: number
+    initiatorCurrentHp: number
+    opponentUserId: number
+    opponentCharacterId: number
+    opponentCurrentHp: number
+    turnNumber?: number
+    nextTurn?: $Enums.BattleTurn
     log?: BattleCreatelogInput | string[]
+    winnerUserId?: number | null
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type BattleUpdateInput = {
-    winnerId?: IntFieldUpdateOperationsInput | number
-    loserId?: IntFieldUpdateOperationsInput | number
+    mode?: EnumBattleModeFieldUpdateOperationsInput | $Enums.BattleMode
+    status?: EnumBattleStatusFieldUpdateOperationsInput | $Enums.BattleStatus
+    initiatorCurrentHp?: IntFieldUpdateOperationsInput | number
+    opponentCurrentHp?: IntFieldUpdateOperationsInput | number
+    turnNumber?: IntFieldUpdateOperationsInput | number
+    nextTurn?: EnumBattleTurnFieldUpdateOperationsInput | $Enums.BattleTurn
     log?: BattleUpdatelogInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiatorUser?: UserUpdateOneRequiredWithoutInitiatedBattlesNestedInput
+    opponentUser?: UserUpdateOneRequiredWithoutOpponentBattlesNestedInput
+    winnerUser?: UserUpdateOneWithoutWonBattlesNestedInput
+    initiatorCharacter?: CharacterUpdateOneRequiredWithoutInitiatedInBattlesNestedInput
+    opponentCharacter?: CharacterUpdateOneRequiredWithoutOpponentInBattlesNestedInput
   }
 
   export type BattleUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
-    winnerId?: IntFieldUpdateOperationsInput | number
-    loserId?: IntFieldUpdateOperationsInput | number
+    mode?: EnumBattleModeFieldUpdateOperationsInput | $Enums.BattleMode
+    status?: EnumBattleStatusFieldUpdateOperationsInput | $Enums.BattleStatus
+    initiatorUserId?: IntFieldUpdateOperationsInput | number
+    initiatorCharacterId?: IntFieldUpdateOperationsInput | number
+    initiatorCurrentHp?: IntFieldUpdateOperationsInput | number
+    opponentUserId?: IntFieldUpdateOperationsInput | number
+    opponentCharacterId?: IntFieldUpdateOperationsInput | number
+    opponentCurrentHp?: IntFieldUpdateOperationsInput | number
+    turnNumber?: IntFieldUpdateOperationsInput | number
+    nextTurn?: EnumBattleTurnFieldUpdateOperationsInput | $Enums.BattleTurn
     log?: BattleUpdatelogInput | string[]
+    winnerUserId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type BattleCreateManyInput = {
     id?: number
-    winnerId: number
-    loserId: number
+    mode: $Enums.BattleMode
+    status?: $Enums.BattleStatus
+    initiatorUserId: number
+    initiatorCharacterId: number
+    initiatorCurrentHp: number
+    opponentUserId: number
+    opponentCharacterId: number
+    opponentCurrentHp: number
+    turnNumber?: number
+    nextTurn?: $Enums.BattleTurn
     log?: BattleCreatelogInput | string[]
+    winnerUserId?: number | null
     createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type BattleUpdateManyMutationInput = {
-    winnerId?: IntFieldUpdateOperationsInput | number
-    loserId?: IntFieldUpdateOperationsInput | number
+    mode?: EnumBattleModeFieldUpdateOperationsInput | $Enums.BattleMode
+    status?: EnumBattleStatusFieldUpdateOperationsInput | $Enums.BattleStatus
+    initiatorCurrentHp?: IntFieldUpdateOperationsInput | number
+    opponentCurrentHp?: IntFieldUpdateOperationsInput | number
+    turnNumber?: IntFieldUpdateOperationsInput | number
+    nextTurn?: EnumBattleTurnFieldUpdateOperationsInput | $Enums.BattleTurn
     log?: BattleUpdatelogInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type BattleUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
-    winnerId?: IntFieldUpdateOperationsInput | number
-    loserId?: IntFieldUpdateOperationsInput | number
+    mode?: EnumBattleModeFieldUpdateOperationsInput | $Enums.BattleMode
+    status?: EnumBattleStatusFieldUpdateOperationsInput | $Enums.BattleStatus
+    initiatorUserId?: IntFieldUpdateOperationsInput | number
+    initiatorCharacterId?: IntFieldUpdateOperationsInput | number
+    initiatorCurrentHp?: IntFieldUpdateOperationsInput | number
+    opponentUserId?: IntFieldUpdateOperationsInput | number
+    opponentCharacterId?: IntFieldUpdateOperationsInput | number
+    opponentCurrentHp?: IntFieldUpdateOperationsInput | number
+    turnNumber?: IntFieldUpdateOperationsInput | number
+    nextTurn?: EnumBattleTurnFieldUpdateOperationsInput | $Enums.BattleTurn
     log?: BattleUpdatelogInput | string[]
+    winnerUserId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -4947,9 +5820,19 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type BattleListRelationFilter = {
+    every?: BattleWhereInput
+    some?: BattleWhereInput
+    none?: BattleWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
+  }
+
+  export type BattleOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type UserCountOrderByAggregateInput = {
@@ -5086,10 +5969,22 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
   export type CharacterCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     hp?: SortOrder
+    baseHp?: SortOrder
     attack?: SortOrder
     level?: SortOrder
     minLevel?: SortOrder
@@ -5100,6 +5995,7 @@ export namespace Prisma {
   export type CharacterAvgOrderByAggregateInput = {
     id?: SortOrder
     hp?: SortOrder
+    baseHp?: SortOrder
     attack?: SortOrder
     level?: SortOrder
     minLevel?: SortOrder
@@ -5109,6 +6005,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     hp?: SortOrder
+    baseHp?: SortOrder
     attack?: SortOrder
     level?: SortOrder
     minLevel?: SortOrder
@@ -5120,6 +6017,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     hp?: SortOrder
+    baseHp?: SortOrder
     attack?: SortOrder
     level?: SortOrder
     minLevel?: SortOrder
@@ -5130,9 +6028,47 @@ export namespace Prisma {
   export type CharacterSumOrderByAggregateInput = {
     id?: SortOrder
     hp?: SortOrder
+    baseHp?: SortOrder
     attack?: SortOrder
     level?: SortOrder
     minLevel?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type EnumBattleModeFilter<$PrismaModel = never> = {
+    equals?: $Enums.BattleMode | EnumBattleModeFieldRefInput<$PrismaModel>
+    in?: $Enums.BattleMode[] | ListEnumBattleModeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BattleMode[] | ListEnumBattleModeFieldRefInput<$PrismaModel>
+    not?: NestedEnumBattleModeFilter<$PrismaModel> | $Enums.BattleMode
+  }
+
+  export type EnumBattleStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.BattleStatus | EnumBattleStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BattleStatus[] | ListEnumBattleStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BattleStatus[] | ListEnumBattleStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBattleStatusFilter<$PrismaModel> | $Enums.BattleStatus
+  }
+
+  export type EnumBattleTurnFilter<$PrismaModel = never> = {
+    equals?: $Enums.BattleTurn | EnumBattleTurnFieldRefInput<$PrismaModel>
+    in?: $Enums.BattleTurn[] | ListEnumBattleTurnFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BattleTurn[] | ListEnumBattleTurnFieldRefInput<$PrismaModel>
+    not?: NestedEnumBattleTurnFilter<$PrismaModel> | $Enums.BattleTurn
   }
 
   export type StringNullableListFilter<$PrismaModel = never> = {
@@ -5143,38 +6079,167 @@ export namespace Prisma {
     isEmpty?: boolean
   }
 
+  export type UserScalarRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
+  }
+
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
+  }
+
+  export type CharacterScalarRelationFilter = {
+    is?: CharacterWhereInput
+    isNot?: CharacterWhereInput
+  }
+
   export type BattleCountOrderByAggregateInput = {
     id?: SortOrder
-    winnerId?: SortOrder
-    loserId?: SortOrder
+    mode?: SortOrder
+    status?: SortOrder
+    initiatorUserId?: SortOrder
+    initiatorCharacterId?: SortOrder
+    initiatorCurrentHp?: SortOrder
+    opponentUserId?: SortOrder
+    opponentCharacterId?: SortOrder
+    opponentCurrentHp?: SortOrder
+    turnNumber?: SortOrder
+    nextTurn?: SortOrder
     log?: SortOrder
+    winnerUserId?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type BattleAvgOrderByAggregateInput = {
     id?: SortOrder
-    winnerId?: SortOrder
-    loserId?: SortOrder
+    initiatorUserId?: SortOrder
+    initiatorCharacterId?: SortOrder
+    initiatorCurrentHp?: SortOrder
+    opponentUserId?: SortOrder
+    opponentCharacterId?: SortOrder
+    opponentCurrentHp?: SortOrder
+    turnNumber?: SortOrder
+    winnerUserId?: SortOrder
   }
 
   export type BattleMaxOrderByAggregateInput = {
     id?: SortOrder
-    winnerId?: SortOrder
-    loserId?: SortOrder
+    mode?: SortOrder
+    status?: SortOrder
+    initiatorUserId?: SortOrder
+    initiatorCharacterId?: SortOrder
+    initiatorCurrentHp?: SortOrder
+    opponentUserId?: SortOrder
+    opponentCharacterId?: SortOrder
+    opponentCurrentHp?: SortOrder
+    turnNumber?: SortOrder
+    nextTurn?: SortOrder
+    winnerUserId?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type BattleMinOrderByAggregateInput = {
     id?: SortOrder
-    winnerId?: SortOrder
-    loserId?: SortOrder
+    mode?: SortOrder
+    status?: SortOrder
+    initiatorUserId?: SortOrder
+    initiatorCharacterId?: SortOrder
+    initiatorCurrentHp?: SortOrder
+    opponentUserId?: SortOrder
+    opponentCharacterId?: SortOrder
+    opponentCurrentHp?: SortOrder
+    turnNumber?: SortOrder
+    nextTurn?: SortOrder
+    winnerUserId?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type BattleSumOrderByAggregateInput = {
     id?: SortOrder
-    winnerId?: SortOrder
-    loserId?: SortOrder
+    initiatorUserId?: SortOrder
+    initiatorCharacterId?: SortOrder
+    initiatorCurrentHp?: SortOrder
+    opponentUserId?: SortOrder
+    opponentCharacterId?: SortOrder
+    opponentCurrentHp?: SortOrder
+    turnNumber?: SortOrder
+    winnerUserId?: SortOrder
+  }
+
+  export type EnumBattleModeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BattleMode | EnumBattleModeFieldRefInput<$PrismaModel>
+    in?: $Enums.BattleMode[] | ListEnumBattleModeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BattleMode[] | ListEnumBattleModeFieldRefInput<$PrismaModel>
+    not?: NestedEnumBattleModeWithAggregatesFilter<$PrismaModel> | $Enums.BattleMode
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBattleModeFilter<$PrismaModel>
+    _max?: NestedEnumBattleModeFilter<$PrismaModel>
+  }
+
+  export type EnumBattleStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BattleStatus | EnumBattleStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BattleStatus[] | ListEnumBattleStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BattleStatus[] | ListEnumBattleStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBattleStatusWithAggregatesFilter<$PrismaModel> | $Enums.BattleStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBattleStatusFilter<$PrismaModel>
+    _max?: NestedEnumBattleStatusFilter<$PrismaModel>
+  }
+
+  export type EnumBattleTurnWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BattleTurn | EnumBattleTurnFieldRefInput<$PrismaModel>
+    in?: $Enums.BattleTurn[] | ListEnumBattleTurnFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BattleTurn[] | ListEnumBattleTurnFieldRefInput<$PrismaModel>
+    not?: NestedEnumBattleTurnWithAggregatesFilter<$PrismaModel> | $Enums.BattleTurn
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBattleTurnFilter<$PrismaModel>
+    _max?: NestedEnumBattleTurnFilter<$PrismaModel>
+  }
+
+  export type BattleCreateNestedManyWithoutInitiatorUserInput = {
+    create?: XOR<BattleCreateWithoutInitiatorUserInput, BattleUncheckedCreateWithoutInitiatorUserInput> | BattleCreateWithoutInitiatorUserInput[] | BattleUncheckedCreateWithoutInitiatorUserInput[]
+    connectOrCreate?: BattleCreateOrConnectWithoutInitiatorUserInput | BattleCreateOrConnectWithoutInitiatorUserInput[]
+    createMany?: BattleCreateManyInitiatorUserInputEnvelope
+    connect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+  }
+
+  export type BattleCreateNestedManyWithoutOpponentUserInput = {
+    create?: XOR<BattleCreateWithoutOpponentUserInput, BattleUncheckedCreateWithoutOpponentUserInput> | BattleCreateWithoutOpponentUserInput[] | BattleUncheckedCreateWithoutOpponentUserInput[]
+    connectOrCreate?: BattleCreateOrConnectWithoutOpponentUserInput | BattleCreateOrConnectWithoutOpponentUserInput[]
+    createMany?: BattleCreateManyOpponentUserInputEnvelope
+    connect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+  }
+
+  export type BattleCreateNestedManyWithoutWinnerUserInput = {
+    create?: XOR<BattleCreateWithoutWinnerUserInput, BattleUncheckedCreateWithoutWinnerUserInput> | BattleCreateWithoutWinnerUserInput[] | BattleUncheckedCreateWithoutWinnerUserInput[]
+    connectOrCreate?: BattleCreateOrConnectWithoutWinnerUserInput | BattleCreateOrConnectWithoutWinnerUserInput[]
+    createMany?: BattleCreateManyWinnerUserInputEnvelope
+    connect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+  }
+
+  export type BattleUncheckedCreateNestedManyWithoutInitiatorUserInput = {
+    create?: XOR<BattleCreateWithoutInitiatorUserInput, BattleUncheckedCreateWithoutInitiatorUserInput> | BattleCreateWithoutInitiatorUserInput[] | BattleUncheckedCreateWithoutInitiatorUserInput[]
+    connectOrCreate?: BattleCreateOrConnectWithoutInitiatorUserInput | BattleCreateOrConnectWithoutInitiatorUserInput[]
+    createMany?: BattleCreateManyInitiatorUserInputEnvelope
+    connect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+  }
+
+  export type BattleUncheckedCreateNestedManyWithoutOpponentUserInput = {
+    create?: XOR<BattleCreateWithoutOpponentUserInput, BattleUncheckedCreateWithoutOpponentUserInput> | BattleCreateWithoutOpponentUserInput[] | BattleUncheckedCreateWithoutOpponentUserInput[]
+    connectOrCreate?: BattleCreateOrConnectWithoutOpponentUserInput | BattleCreateOrConnectWithoutOpponentUserInput[]
+    createMany?: BattleCreateManyOpponentUserInputEnvelope
+    connect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+  }
+
+  export type BattleUncheckedCreateNestedManyWithoutWinnerUserInput = {
+    create?: XOR<BattleCreateWithoutWinnerUserInput, BattleUncheckedCreateWithoutWinnerUserInput> | BattleCreateWithoutWinnerUserInput[] | BattleUncheckedCreateWithoutWinnerUserInput[]
+    connectOrCreate?: BattleCreateOrConnectWithoutWinnerUserInput | BattleCreateOrConnectWithoutWinnerUserInput[]
+    createMany?: BattleCreateManyWinnerUserInputEnvelope
+    connect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -5201,13 +6266,273 @@ export namespace Prisma {
     set?: Date | string
   }
 
+  export type BattleUpdateManyWithoutInitiatorUserNestedInput = {
+    create?: XOR<BattleCreateWithoutInitiatorUserInput, BattleUncheckedCreateWithoutInitiatorUserInput> | BattleCreateWithoutInitiatorUserInput[] | BattleUncheckedCreateWithoutInitiatorUserInput[]
+    connectOrCreate?: BattleCreateOrConnectWithoutInitiatorUserInput | BattleCreateOrConnectWithoutInitiatorUserInput[]
+    upsert?: BattleUpsertWithWhereUniqueWithoutInitiatorUserInput | BattleUpsertWithWhereUniqueWithoutInitiatorUserInput[]
+    createMany?: BattleCreateManyInitiatorUserInputEnvelope
+    set?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    disconnect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    delete?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    connect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    update?: BattleUpdateWithWhereUniqueWithoutInitiatorUserInput | BattleUpdateWithWhereUniqueWithoutInitiatorUserInput[]
+    updateMany?: BattleUpdateManyWithWhereWithoutInitiatorUserInput | BattleUpdateManyWithWhereWithoutInitiatorUserInput[]
+    deleteMany?: BattleScalarWhereInput | BattleScalarWhereInput[]
+  }
+
+  export type BattleUpdateManyWithoutOpponentUserNestedInput = {
+    create?: XOR<BattleCreateWithoutOpponentUserInput, BattleUncheckedCreateWithoutOpponentUserInput> | BattleCreateWithoutOpponentUserInput[] | BattleUncheckedCreateWithoutOpponentUserInput[]
+    connectOrCreate?: BattleCreateOrConnectWithoutOpponentUserInput | BattleCreateOrConnectWithoutOpponentUserInput[]
+    upsert?: BattleUpsertWithWhereUniqueWithoutOpponentUserInput | BattleUpsertWithWhereUniqueWithoutOpponentUserInput[]
+    createMany?: BattleCreateManyOpponentUserInputEnvelope
+    set?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    disconnect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    delete?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    connect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    update?: BattleUpdateWithWhereUniqueWithoutOpponentUserInput | BattleUpdateWithWhereUniqueWithoutOpponentUserInput[]
+    updateMany?: BattleUpdateManyWithWhereWithoutOpponentUserInput | BattleUpdateManyWithWhereWithoutOpponentUserInput[]
+    deleteMany?: BattleScalarWhereInput | BattleScalarWhereInput[]
+  }
+
+  export type BattleUpdateManyWithoutWinnerUserNestedInput = {
+    create?: XOR<BattleCreateWithoutWinnerUserInput, BattleUncheckedCreateWithoutWinnerUserInput> | BattleCreateWithoutWinnerUserInput[] | BattleUncheckedCreateWithoutWinnerUserInput[]
+    connectOrCreate?: BattleCreateOrConnectWithoutWinnerUserInput | BattleCreateOrConnectWithoutWinnerUserInput[]
+    upsert?: BattleUpsertWithWhereUniqueWithoutWinnerUserInput | BattleUpsertWithWhereUniqueWithoutWinnerUserInput[]
+    createMany?: BattleCreateManyWinnerUserInputEnvelope
+    set?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    disconnect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    delete?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    connect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    update?: BattleUpdateWithWhereUniqueWithoutWinnerUserInput | BattleUpdateWithWhereUniqueWithoutWinnerUserInput[]
+    updateMany?: BattleUpdateManyWithWhereWithoutWinnerUserInput | BattleUpdateManyWithWhereWithoutWinnerUserInput[]
+    deleteMany?: BattleScalarWhereInput | BattleScalarWhereInput[]
+  }
+
+  export type BattleUncheckedUpdateManyWithoutInitiatorUserNestedInput = {
+    create?: XOR<BattleCreateWithoutInitiatorUserInput, BattleUncheckedCreateWithoutInitiatorUserInput> | BattleCreateWithoutInitiatorUserInput[] | BattleUncheckedCreateWithoutInitiatorUserInput[]
+    connectOrCreate?: BattleCreateOrConnectWithoutInitiatorUserInput | BattleCreateOrConnectWithoutInitiatorUserInput[]
+    upsert?: BattleUpsertWithWhereUniqueWithoutInitiatorUserInput | BattleUpsertWithWhereUniqueWithoutInitiatorUserInput[]
+    createMany?: BattleCreateManyInitiatorUserInputEnvelope
+    set?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    disconnect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    delete?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    connect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    update?: BattleUpdateWithWhereUniqueWithoutInitiatorUserInput | BattleUpdateWithWhereUniqueWithoutInitiatorUserInput[]
+    updateMany?: BattleUpdateManyWithWhereWithoutInitiatorUserInput | BattleUpdateManyWithWhereWithoutInitiatorUserInput[]
+    deleteMany?: BattleScalarWhereInput | BattleScalarWhereInput[]
+  }
+
+  export type BattleUncheckedUpdateManyWithoutOpponentUserNestedInput = {
+    create?: XOR<BattleCreateWithoutOpponentUserInput, BattleUncheckedCreateWithoutOpponentUserInput> | BattleCreateWithoutOpponentUserInput[] | BattleUncheckedCreateWithoutOpponentUserInput[]
+    connectOrCreate?: BattleCreateOrConnectWithoutOpponentUserInput | BattleCreateOrConnectWithoutOpponentUserInput[]
+    upsert?: BattleUpsertWithWhereUniqueWithoutOpponentUserInput | BattleUpsertWithWhereUniqueWithoutOpponentUserInput[]
+    createMany?: BattleCreateManyOpponentUserInputEnvelope
+    set?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    disconnect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    delete?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    connect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    update?: BattleUpdateWithWhereUniqueWithoutOpponentUserInput | BattleUpdateWithWhereUniqueWithoutOpponentUserInput[]
+    updateMany?: BattleUpdateManyWithWhereWithoutOpponentUserInput | BattleUpdateManyWithWhereWithoutOpponentUserInput[]
+    deleteMany?: BattleScalarWhereInput | BattleScalarWhereInput[]
+  }
+
+  export type BattleUncheckedUpdateManyWithoutWinnerUserNestedInput = {
+    create?: XOR<BattleCreateWithoutWinnerUserInput, BattleUncheckedCreateWithoutWinnerUserInput> | BattleCreateWithoutWinnerUserInput[] | BattleUncheckedCreateWithoutWinnerUserInput[]
+    connectOrCreate?: BattleCreateOrConnectWithoutWinnerUserInput | BattleCreateOrConnectWithoutWinnerUserInput[]
+    upsert?: BattleUpsertWithWhereUniqueWithoutWinnerUserInput | BattleUpsertWithWhereUniqueWithoutWinnerUserInput[]
+    createMany?: BattleCreateManyWinnerUserInputEnvelope
+    set?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    disconnect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    delete?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    connect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    update?: BattleUpdateWithWhereUniqueWithoutWinnerUserInput | BattleUpdateWithWhereUniqueWithoutWinnerUserInput[]
+    updateMany?: BattleUpdateManyWithWhereWithoutWinnerUserInput | BattleUpdateManyWithWhereWithoutWinnerUserInput[]
+    deleteMany?: BattleScalarWhereInput | BattleScalarWhereInput[]
+  }
+
+  export type BattleCreateNestedManyWithoutInitiatorCharacterInput = {
+    create?: XOR<BattleCreateWithoutInitiatorCharacterInput, BattleUncheckedCreateWithoutInitiatorCharacterInput> | BattleCreateWithoutInitiatorCharacterInput[] | BattleUncheckedCreateWithoutInitiatorCharacterInput[]
+    connectOrCreate?: BattleCreateOrConnectWithoutInitiatorCharacterInput | BattleCreateOrConnectWithoutInitiatorCharacterInput[]
+    createMany?: BattleCreateManyInitiatorCharacterInputEnvelope
+    connect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+  }
+
+  export type BattleCreateNestedManyWithoutOpponentCharacterInput = {
+    create?: XOR<BattleCreateWithoutOpponentCharacterInput, BattleUncheckedCreateWithoutOpponentCharacterInput> | BattleCreateWithoutOpponentCharacterInput[] | BattleUncheckedCreateWithoutOpponentCharacterInput[]
+    connectOrCreate?: BattleCreateOrConnectWithoutOpponentCharacterInput | BattleCreateOrConnectWithoutOpponentCharacterInput[]
+    createMany?: BattleCreateManyOpponentCharacterInputEnvelope
+    connect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+  }
+
+  export type BattleUncheckedCreateNestedManyWithoutInitiatorCharacterInput = {
+    create?: XOR<BattleCreateWithoutInitiatorCharacterInput, BattleUncheckedCreateWithoutInitiatorCharacterInput> | BattleCreateWithoutInitiatorCharacterInput[] | BattleUncheckedCreateWithoutInitiatorCharacterInput[]
+    connectOrCreate?: BattleCreateOrConnectWithoutInitiatorCharacterInput | BattleCreateOrConnectWithoutInitiatorCharacterInput[]
+    createMany?: BattleCreateManyInitiatorCharacterInputEnvelope
+    connect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+  }
+
+  export type BattleUncheckedCreateNestedManyWithoutOpponentCharacterInput = {
+    create?: XOR<BattleCreateWithoutOpponentCharacterInput, BattleUncheckedCreateWithoutOpponentCharacterInput> | BattleCreateWithoutOpponentCharacterInput[] | BattleUncheckedCreateWithoutOpponentCharacterInput[]
+    connectOrCreate?: BattleCreateOrConnectWithoutOpponentCharacterInput | BattleCreateOrConnectWithoutOpponentCharacterInput[]
+    createMany?: BattleCreateManyOpponentCharacterInputEnvelope
+    connect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type BattleUpdateManyWithoutInitiatorCharacterNestedInput = {
+    create?: XOR<BattleCreateWithoutInitiatorCharacterInput, BattleUncheckedCreateWithoutInitiatorCharacterInput> | BattleCreateWithoutInitiatorCharacterInput[] | BattleUncheckedCreateWithoutInitiatorCharacterInput[]
+    connectOrCreate?: BattleCreateOrConnectWithoutInitiatorCharacterInput | BattleCreateOrConnectWithoutInitiatorCharacterInput[]
+    upsert?: BattleUpsertWithWhereUniqueWithoutInitiatorCharacterInput | BattleUpsertWithWhereUniqueWithoutInitiatorCharacterInput[]
+    createMany?: BattleCreateManyInitiatorCharacterInputEnvelope
+    set?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    disconnect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    delete?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    connect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    update?: BattleUpdateWithWhereUniqueWithoutInitiatorCharacterInput | BattleUpdateWithWhereUniqueWithoutInitiatorCharacterInput[]
+    updateMany?: BattleUpdateManyWithWhereWithoutInitiatorCharacterInput | BattleUpdateManyWithWhereWithoutInitiatorCharacterInput[]
+    deleteMany?: BattleScalarWhereInput | BattleScalarWhereInput[]
+  }
+
+  export type BattleUpdateManyWithoutOpponentCharacterNestedInput = {
+    create?: XOR<BattleCreateWithoutOpponentCharacterInput, BattleUncheckedCreateWithoutOpponentCharacterInput> | BattleCreateWithoutOpponentCharacterInput[] | BattleUncheckedCreateWithoutOpponentCharacterInput[]
+    connectOrCreate?: BattleCreateOrConnectWithoutOpponentCharacterInput | BattleCreateOrConnectWithoutOpponentCharacterInput[]
+    upsert?: BattleUpsertWithWhereUniqueWithoutOpponentCharacterInput | BattleUpsertWithWhereUniqueWithoutOpponentCharacterInput[]
+    createMany?: BattleCreateManyOpponentCharacterInputEnvelope
+    set?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    disconnect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    delete?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    connect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    update?: BattleUpdateWithWhereUniqueWithoutOpponentCharacterInput | BattleUpdateWithWhereUniqueWithoutOpponentCharacterInput[]
+    updateMany?: BattleUpdateManyWithWhereWithoutOpponentCharacterInput | BattleUpdateManyWithWhereWithoutOpponentCharacterInput[]
+    deleteMany?: BattleScalarWhereInput | BattleScalarWhereInput[]
+  }
+
+  export type BattleUncheckedUpdateManyWithoutInitiatorCharacterNestedInput = {
+    create?: XOR<BattleCreateWithoutInitiatorCharacterInput, BattleUncheckedCreateWithoutInitiatorCharacterInput> | BattleCreateWithoutInitiatorCharacterInput[] | BattleUncheckedCreateWithoutInitiatorCharacterInput[]
+    connectOrCreate?: BattleCreateOrConnectWithoutInitiatorCharacterInput | BattleCreateOrConnectWithoutInitiatorCharacterInput[]
+    upsert?: BattleUpsertWithWhereUniqueWithoutInitiatorCharacterInput | BattleUpsertWithWhereUniqueWithoutInitiatorCharacterInput[]
+    createMany?: BattleCreateManyInitiatorCharacterInputEnvelope
+    set?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    disconnect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    delete?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    connect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    update?: BattleUpdateWithWhereUniqueWithoutInitiatorCharacterInput | BattleUpdateWithWhereUniqueWithoutInitiatorCharacterInput[]
+    updateMany?: BattleUpdateManyWithWhereWithoutInitiatorCharacterInput | BattleUpdateManyWithWhereWithoutInitiatorCharacterInput[]
+    deleteMany?: BattleScalarWhereInput | BattleScalarWhereInput[]
+  }
+
+  export type BattleUncheckedUpdateManyWithoutOpponentCharacterNestedInput = {
+    create?: XOR<BattleCreateWithoutOpponentCharacterInput, BattleUncheckedCreateWithoutOpponentCharacterInput> | BattleCreateWithoutOpponentCharacterInput[] | BattleUncheckedCreateWithoutOpponentCharacterInput[]
+    connectOrCreate?: BattleCreateOrConnectWithoutOpponentCharacterInput | BattleCreateOrConnectWithoutOpponentCharacterInput[]
+    upsert?: BattleUpsertWithWhereUniqueWithoutOpponentCharacterInput | BattleUpsertWithWhereUniqueWithoutOpponentCharacterInput[]
+    createMany?: BattleCreateManyOpponentCharacterInputEnvelope
+    set?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    disconnect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    delete?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    connect?: BattleWhereUniqueInput | BattleWhereUniqueInput[]
+    update?: BattleUpdateWithWhereUniqueWithoutOpponentCharacterInput | BattleUpdateWithWhereUniqueWithoutOpponentCharacterInput[]
+    updateMany?: BattleUpdateManyWithWhereWithoutOpponentCharacterInput | BattleUpdateManyWithWhereWithoutOpponentCharacterInput[]
+    deleteMany?: BattleScalarWhereInput | BattleScalarWhereInput[]
+  }
+
   export type BattleCreatelogInput = {
     set: string[]
+  }
+
+  export type UserCreateNestedOneWithoutInitiatedBattlesInput = {
+    create?: XOR<UserCreateWithoutInitiatedBattlesInput, UserUncheckedCreateWithoutInitiatedBattlesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutInitiatedBattlesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutOpponentBattlesInput = {
+    create?: XOR<UserCreateWithoutOpponentBattlesInput, UserUncheckedCreateWithoutOpponentBattlesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutOpponentBattlesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutWonBattlesInput = {
+    create?: XOR<UserCreateWithoutWonBattlesInput, UserUncheckedCreateWithoutWonBattlesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutWonBattlesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type CharacterCreateNestedOneWithoutInitiatedInBattlesInput = {
+    create?: XOR<CharacterCreateWithoutInitiatedInBattlesInput, CharacterUncheckedCreateWithoutInitiatedInBattlesInput>
+    connectOrCreate?: CharacterCreateOrConnectWithoutInitiatedInBattlesInput
+    connect?: CharacterWhereUniqueInput
+  }
+
+  export type CharacterCreateNestedOneWithoutOpponentInBattlesInput = {
+    create?: XOR<CharacterCreateWithoutOpponentInBattlesInput, CharacterUncheckedCreateWithoutOpponentInBattlesInput>
+    connectOrCreate?: CharacterCreateOrConnectWithoutOpponentInBattlesInput
+    connect?: CharacterWhereUniqueInput
+  }
+
+  export type EnumBattleModeFieldUpdateOperationsInput = {
+    set?: $Enums.BattleMode
+  }
+
+  export type EnumBattleStatusFieldUpdateOperationsInput = {
+    set?: $Enums.BattleStatus
+  }
+
+  export type EnumBattleTurnFieldUpdateOperationsInput = {
+    set?: $Enums.BattleTurn
   }
 
   export type BattleUpdatelogInput = {
     set?: string[]
     push?: string | string[]
+  }
+
+  export type UserUpdateOneRequiredWithoutInitiatedBattlesNestedInput = {
+    create?: XOR<UserCreateWithoutInitiatedBattlesInput, UserUncheckedCreateWithoutInitiatedBattlesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutInitiatedBattlesInput
+    upsert?: UserUpsertWithoutInitiatedBattlesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutInitiatedBattlesInput, UserUpdateWithoutInitiatedBattlesInput>, UserUncheckedUpdateWithoutInitiatedBattlesInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutOpponentBattlesNestedInput = {
+    create?: XOR<UserCreateWithoutOpponentBattlesInput, UserUncheckedCreateWithoutOpponentBattlesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutOpponentBattlesInput
+    upsert?: UserUpsertWithoutOpponentBattlesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutOpponentBattlesInput, UserUpdateWithoutOpponentBattlesInput>, UserUncheckedUpdateWithoutOpponentBattlesInput>
+  }
+
+  export type UserUpdateOneWithoutWonBattlesNestedInput = {
+    create?: XOR<UserCreateWithoutWonBattlesInput, UserUncheckedCreateWithoutWonBattlesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutWonBattlesInput
+    upsert?: UserUpsertWithoutWonBattlesInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutWonBattlesInput, UserUpdateWithoutWonBattlesInput>, UserUncheckedUpdateWithoutWonBattlesInput>
+  }
+
+  export type CharacterUpdateOneRequiredWithoutInitiatedInBattlesNestedInput = {
+    create?: XOR<CharacterCreateWithoutInitiatedInBattlesInput, CharacterUncheckedCreateWithoutInitiatedInBattlesInput>
+    connectOrCreate?: CharacterCreateOrConnectWithoutInitiatedInBattlesInput
+    upsert?: CharacterUpsertWithoutInitiatedInBattlesInput
+    connect?: CharacterWhereUniqueInput
+    update?: XOR<XOR<CharacterUpdateToOneWithWhereWithoutInitiatedInBattlesInput, CharacterUpdateWithoutInitiatedInBattlesInput>, CharacterUncheckedUpdateWithoutInitiatedInBattlesInput>
+  }
+
+  export type CharacterUpdateOneRequiredWithoutOpponentInBattlesNestedInput = {
+    create?: XOR<CharacterCreateWithoutOpponentInBattlesInput, CharacterUncheckedCreateWithoutOpponentInBattlesInput>
+    connectOrCreate?: CharacterCreateOrConnectWithoutOpponentInBattlesInput
+    upsert?: CharacterUpsertWithoutOpponentInBattlesInput
+    connect?: CharacterWhereUniqueInput
+    update?: XOR<XOR<CharacterUpdateToOneWithWhereWithoutOpponentInBattlesInput, CharacterUpdateWithoutOpponentInBattlesInput>, CharacterUncheckedUpdateWithoutOpponentInBattlesInput>
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -5361,6 +6686,1101 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedEnumBattleModeFilter<$PrismaModel = never> = {
+    equals?: $Enums.BattleMode | EnumBattleModeFieldRefInput<$PrismaModel>
+    in?: $Enums.BattleMode[] | ListEnumBattleModeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BattleMode[] | ListEnumBattleModeFieldRefInput<$PrismaModel>
+    not?: NestedEnumBattleModeFilter<$PrismaModel> | $Enums.BattleMode
+  }
+
+  export type NestedEnumBattleStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.BattleStatus | EnumBattleStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BattleStatus[] | ListEnumBattleStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BattleStatus[] | ListEnumBattleStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBattleStatusFilter<$PrismaModel> | $Enums.BattleStatus
+  }
+
+  export type NestedEnumBattleTurnFilter<$PrismaModel = never> = {
+    equals?: $Enums.BattleTurn | EnumBattleTurnFieldRefInput<$PrismaModel>
+    in?: $Enums.BattleTurn[] | ListEnumBattleTurnFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BattleTurn[] | ListEnumBattleTurnFieldRefInput<$PrismaModel>
+    not?: NestedEnumBattleTurnFilter<$PrismaModel> | $Enums.BattleTurn
+  }
+
+  export type NestedEnumBattleModeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BattleMode | EnumBattleModeFieldRefInput<$PrismaModel>
+    in?: $Enums.BattleMode[] | ListEnumBattleModeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BattleMode[] | ListEnumBattleModeFieldRefInput<$PrismaModel>
+    not?: NestedEnumBattleModeWithAggregatesFilter<$PrismaModel> | $Enums.BattleMode
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBattleModeFilter<$PrismaModel>
+    _max?: NestedEnumBattleModeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumBattleStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BattleStatus | EnumBattleStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BattleStatus[] | ListEnumBattleStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BattleStatus[] | ListEnumBattleStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBattleStatusWithAggregatesFilter<$PrismaModel> | $Enums.BattleStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBattleStatusFilter<$PrismaModel>
+    _max?: NestedEnumBattleStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumBattleTurnWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BattleTurn | EnumBattleTurnFieldRefInput<$PrismaModel>
+    in?: $Enums.BattleTurn[] | ListEnumBattleTurnFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BattleTurn[] | ListEnumBattleTurnFieldRefInput<$PrismaModel>
+    not?: NestedEnumBattleTurnWithAggregatesFilter<$PrismaModel> | $Enums.BattleTurn
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBattleTurnFilter<$PrismaModel>
+    _max?: NestedEnumBattleTurnFilter<$PrismaModel>
+  }
+
+  export type BattleCreateWithoutInitiatorUserInput = {
+    mode: $Enums.BattleMode
+    status?: $Enums.BattleStatus
+    initiatorCurrentHp: number
+    opponentCurrentHp: number
+    turnNumber?: number
+    nextTurn?: $Enums.BattleTurn
+    log?: BattleCreatelogInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    opponentUser: UserCreateNestedOneWithoutOpponentBattlesInput
+    winnerUser?: UserCreateNestedOneWithoutWonBattlesInput
+    initiatorCharacter: CharacterCreateNestedOneWithoutInitiatedInBattlesInput
+    opponentCharacter: CharacterCreateNestedOneWithoutOpponentInBattlesInput
+  }
+
+  export type BattleUncheckedCreateWithoutInitiatorUserInput = {
+    id?: number
+    mode: $Enums.BattleMode
+    status?: $Enums.BattleStatus
+    initiatorCharacterId: number
+    initiatorCurrentHp: number
+    opponentUserId: number
+    opponentCharacterId: number
+    opponentCurrentHp: number
+    turnNumber?: number
+    nextTurn?: $Enums.BattleTurn
+    log?: BattleCreatelogInput | string[]
+    winnerUserId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BattleCreateOrConnectWithoutInitiatorUserInput = {
+    where: BattleWhereUniqueInput
+    create: XOR<BattleCreateWithoutInitiatorUserInput, BattleUncheckedCreateWithoutInitiatorUserInput>
+  }
+
+  export type BattleCreateManyInitiatorUserInputEnvelope = {
+    data: BattleCreateManyInitiatorUserInput | BattleCreateManyInitiatorUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BattleCreateWithoutOpponentUserInput = {
+    mode: $Enums.BattleMode
+    status?: $Enums.BattleStatus
+    initiatorCurrentHp: number
+    opponentCurrentHp: number
+    turnNumber?: number
+    nextTurn?: $Enums.BattleTurn
+    log?: BattleCreatelogInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    initiatorUser: UserCreateNestedOneWithoutInitiatedBattlesInput
+    winnerUser?: UserCreateNestedOneWithoutWonBattlesInput
+    initiatorCharacter: CharacterCreateNestedOneWithoutInitiatedInBattlesInput
+    opponentCharacter: CharacterCreateNestedOneWithoutOpponentInBattlesInput
+  }
+
+  export type BattleUncheckedCreateWithoutOpponentUserInput = {
+    id?: number
+    mode: $Enums.BattleMode
+    status?: $Enums.BattleStatus
+    initiatorUserId: number
+    initiatorCharacterId: number
+    initiatorCurrentHp: number
+    opponentCharacterId: number
+    opponentCurrentHp: number
+    turnNumber?: number
+    nextTurn?: $Enums.BattleTurn
+    log?: BattleCreatelogInput | string[]
+    winnerUserId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BattleCreateOrConnectWithoutOpponentUserInput = {
+    where: BattleWhereUniqueInput
+    create: XOR<BattleCreateWithoutOpponentUserInput, BattleUncheckedCreateWithoutOpponentUserInput>
+  }
+
+  export type BattleCreateManyOpponentUserInputEnvelope = {
+    data: BattleCreateManyOpponentUserInput | BattleCreateManyOpponentUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BattleCreateWithoutWinnerUserInput = {
+    mode: $Enums.BattleMode
+    status?: $Enums.BattleStatus
+    initiatorCurrentHp: number
+    opponentCurrentHp: number
+    turnNumber?: number
+    nextTurn?: $Enums.BattleTurn
+    log?: BattleCreatelogInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    initiatorUser: UserCreateNestedOneWithoutInitiatedBattlesInput
+    opponentUser: UserCreateNestedOneWithoutOpponentBattlesInput
+    initiatorCharacter: CharacterCreateNestedOneWithoutInitiatedInBattlesInput
+    opponentCharacter: CharacterCreateNestedOneWithoutOpponentInBattlesInput
+  }
+
+  export type BattleUncheckedCreateWithoutWinnerUserInput = {
+    id?: number
+    mode: $Enums.BattleMode
+    status?: $Enums.BattleStatus
+    initiatorUserId: number
+    initiatorCharacterId: number
+    initiatorCurrentHp: number
+    opponentUserId: number
+    opponentCharacterId: number
+    opponentCurrentHp: number
+    turnNumber?: number
+    nextTurn?: $Enums.BattleTurn
+    log?: BattleCreatelogInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BattleCreateOrConnectWithoutWinnerUserInput = {
+    where: BattleWhereUniqueInput
+    create: XOR<BattleCreateWithoutWinnerUserInput, BattleUncheckedCreateWithoutWinnerUserInput>
+  }
+
+  export type BattleCreateManyWinnerUserInputEnvelope = {
+    data: BattleCreateManyWinnerUserInput | BattleCreateManyWinnerUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BattleUpsertWithWhereUniqueWithoutInitiatorUserInput = {
+    where: BattleWhereUniqueInput
+    update: XOR<BattleUpdateWithoutInitiatorUserInput, BattleUncheckedUpdateWithoutInitiatorUserInput>
+    create: XOR<BattleCreateWithoutInitiatorUserInput, BattleUncheckedCreateWithoutInitiatorUserInput>
+  }
+
+  export type BattleUpdateWithWhereUniqueWithoutInitiatorUserInput = {
+    where: BattleWhereUniqueInput
+    data: XOR<BattleUpdateWithoutInitiatorUserInput, BattleUncheckedUpdateWithoutInitiatorUserInput>
+  }
+
+  export type BattleUpdateManyWithWhereWithoutInitiatorUserInput = {
+    where: BattleScalarWhereInput
+    data: XOR<BattleUpdateManyMutationInput, BattleUncheckedUpdateManyWithoutInitiatorUserInput>
+  }
+
+  export type BattleScalarWhereInput = {
+    AND?: BattleScalarWhereInput | BattleScalarWhereInput[]
+    OR?: BattleScalarWhereInput[]
+    NOT?: BattleScalarWhereInput | BattleScalarWhereInput[]
+    id?: IntFilter<"Battle"> | number
+    mode?: EnumBattleModeFilter<"Battle"> | $Enums.BattleMode
+    status?: EnumBattleStatusFilter<"Battle"> | $Enums.BattleStatus
+    initiatorUserId?: IntFilter<"Battle"> | number
+    initiatorCharacterId?: IntFilter<"Battle"> | number
+    initiatorCurrentHp?: IntFilter<"Battle"> | number
+    opponentUserId?: IntFilter<"Battle"> | number
+    opponentCharacterId?: IntFilter<"Battle"> | number
+    opponentCurrentHp?: IntFilter<"Battle"> | number
+    turnNumber?: IntFilter<"Battle"> | number
+    nextTurn?: EnumBattleTurnFilter<"Battle"> | $Enums.BattleTurn
+    log?: StringNullableListFilter<"Battle">
+    winnerUserId?: IntNullableFilter<"Battle"> | number | null
+    createdAt?: DateTimeFilter<"Battle"> | Date | string
+    updatedAt?: DateTimeFilter<"Battle"> | Date | string
+  }
+
+  export type BattleUpsertWithWhereUniqueWithoutOpponentUserInput = {
+    where: BattleWhereUniqueInput
+    update: XOR<BattleUpdateWithoutOpponentUserInput, BattleUncheckedUpdateWithoutOpponentUserInput>
+    create: XOR<BattleCreateWithoutOpponentUserInput, BattleUncheckedCreateWithoutOpponentUserInput>
+  }
+
+  export type BattleUpdateWithWhereUniqueWithoutOpponentUserInput = {
+    where: BattleWhereUniqueInput
+    data: XOR<BattleUpdateWithoutOpponentUserInput, BattleUncheckedUpdateWithoutOpponentUserInput>
+  }
+
+  export type BattleUpdateManyWithWhereWithoutOpponentUserInput = {
+    where: BattleScalarWhereInput
+    data: XOR<BattleUpdateManyMutationInput, BattleUncheckedUpdateManyWithoutOpponentUserInput>
+  }
+
+  export type BattleUpsertWithWhereUniqueWithoutWinnerUserInput = {
+    where: BattleWhereUniqueInput
+    update: XOR<BattleUpdateWithoutWinnerUserInput, BattleUncheckedUpdateWithoutWinnerUserInput>
+    create: XOR<BattleCreateWithoutWinnerUserInput, BattleUncheckedCreateWithoutWinnerUserInput>
+  }
+
+  export type BattleUpdateWithWhereUniqueWithoutWinnerUserInput = {
+    where: BattleWhereUniqueInput
+    data: XOR<BattleUpdateWithoutWinnerUserInput, BattleUncheckedUpdateWithoutWinnerUserInput>
+  }
+
+  export type BattleUpdateManyWithWhereWithoutWinnerUserInput = {
+    where: BattleScalarWhereInput
+    data: XOR<BattleUpdateManyMutationInput, BattleUncheckedUpdateManyWithoutWinnerUserInput>
+  }
+
+  export type BattleCreateWithoutInitiatorCharacterInput = {
+    mode: $Enums.BattleMode
+    status?: $Enums.BattleStatus
+    initiatorCurrentHp: number
+    opponentCurrentHp: number
+    turnNumber?: number
+    nextTurn?: $Enums.BattleTurn
+    log?: BattleCreatelogInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    initiatorUser: UserCreateNestedOneWithoutInitiatedBattlesInput
+    opponentUser: UserCreateNestedOneWithoutOpponentBattlesInput
+    winnerUser?: UserCreateNestedOneWithoutWonBattlesInput
+    opponentCharacter: CharacterCreateNestedOneWithoutOpponentInBattlesInput
+  }
+
+  export type BattleUncheckedCreateWithoutInitiatorCharacterInput = {
+    id?: number
+    mode: $Enums.BattleMode
+    status?: $Enums.BattleStatus
+    initiatorUserId: number
+    initiatorCurrentHp: number
+    opponentUserId: number
+    opponentCharacterId: number
+    opponentCurrentHp: number
+    turnNumber?: number
+    nextTurn?: $Enums.BattleTurn
+    log?: BattleCreatelogInput | string[]
+    winnerUserId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BattleCreateOrConnectWithoutInitiatorCharacterInput = {
+    where: BattleWhereUniqueInput
+    create: XOR<BattleCreateWithoutInitiatorCharacterInput, BattleUncheckedCreateWithoutInitiatorCharacterInput>
+  }
+
+  export type BattleCreateManyInitiatorCharacterInputEnvelope = {
+    data: BattleCreateManyInitiatorCharacterInput | BattleCreateManyInitiatorCharacterInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BattleCreateWithoutOpponentCharacterInput = {
+    mode: $Enums.BattleMode
+    status?: $Enums.BattleStatus
+    initiatorCurrentHp: number
+    opponentCurrentHp: number
+    turnNumber?: number
+    nextTurn?: $Enums.BattleTurn
+    log?: BattleCreatelogInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    initiatorUser: UserCreateNestedOneWithoutInitiatedBattlesInput
+    opponentUser: UserCreateNestedOneWithoutOpponentBattlesInput
+    winnerUser?: UserCreateNestedOneWithoutWonBattlesInput
+    initiatorCharacter: CharacterCreateNestedOneWithoutInitiatedInBattlesInput
+  }
+
+  export type BattleUncheckedCreateWithoutOpponentCharacterInput = {
+    id?: number
+    mode: $Enums.BattleMode
+    status?: $Enums.BattleStatus
+    initiatorUserId: number
+    initiatorCharacterId: number
+    initiatorCurrentHp: number
+    opponentUserId: number
+    opponentCurrentHp: number
+    turnNumber?: number
+    nextTurn?: $Enums.BattleTurn
+    log?: BattleCreatelogInput | string[]
+    winnerUserId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BattleCreateOrConnectWithoutOpponentCharacterInput = {
+    where: BattleWhereUniqueInput
+    create: XOR<BattleCreateWithoutOpponentCharacterInput, BattleUncheckedCreateWithoutOpponentCharacterInput>
+  }
+
+  export type BattleCreateManyOpponentCharacterInputEnvelope = {
+    data: BattleCreateManyOpponentCharacterInput | BattleCreateManyOpponentCharacterInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BattleUpsertWithWhereUniqueWithoutInitiatorCharacterInput = {
+    where: BattleWhereUniqueInput
+    update: XOR<BattleUpdateWithoutInitiatorCharacterInput, BattleUncheckedUpdateWithoutInitiatorCharacterInput>
+    create: XOR<BattleCreateWithoutInitiatorCharacterInput, BattleUncheckedCreateWithoutInitiatorCharacterInput>
+  }
+
+  export type BattleUpdateWithWhereUniqueWithoutInitiatorCharacterInput = {
+    where: BattleWhereUniqueInput
+    data: XOR<BattleUpdateWithoutInitiatorCharacterInput, BattleUncheckedUpdateWithoutInitiatorCharacterInput>
+  }
+
+  export type BattleUpdateManyWithWhereWithoutInitiatorCharacterInput = {
+    where: BattleScalarWhereInput
+    data: XOR<BattleUpdateManyMutationInput, BattleUncheckedUpdateManyWithoutInitiatorCharacterInput>
+  }
+
+  export type BattleUpsertWithWhereUniqueWithoutOpponentCharacterInput = {
+    where: BattleWhereUniqueInput
+    update: XOR<BattleUpdateWithoutOpponentCharacterInput, BattleUncheckedUpdateWithoutOpponentCharacterInput>
+    create: XOR<BattleCreateWithoutOpponentCharacterInput, BattleUncheckedCreateWithoutOpponentCharacterInput>
+  }
+
+  export type BattleUpdateWithWhereUniqueWithoutOpponentCharacterInput = {
+    where: BattleWhereUniqueInput
+    data: XOR<BattleUpdateWithoutOpponentCharacterInput, BattleUncheckedUpdateWithoutOpponentCharacterInput>
+  }
+
+  export type BattleUpdateManyWithWhereWithoutOpponentCharacterInput = {
+    where: BattleScalarWhereInput
+    data: XOR<BattleUpdateManyMutationInput, BattleUncheckedUpdateManyWithoutOpponentCharacterInput>
+  }
+
+  export type UserCreateWithoutInitiatedBattlesInput = {
+    email: string
+    password: string
+    name?: string | null
+    role?: $Enums.Role
+    level?: number
+    xp?: number
+    wins?: number
+    losses?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    opponentBattles?: BattleCreateNestedManyWithoutOpponentUserInput
+    wonBattles?: BattleCreateNestedManyWithoutWinnerUserInput
+  }
+
+  export type UserUncheckedCreateWithoutInitiatedBattlesInput = {
+    id?: number
+    email: string
+    password: string
+    name?: string | null
+    role?: $Enums.Role
+    level?: number
+    xp?: number
+    wins?: number
+    losses?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    opponentBattles?: BattleUncheckedCreateNestedManyWithoutOpponentUserInput
+    wonBattles?: BattleUncheckedCreateNestedManyWithoutWinnerUserInput
+  }
+
+  export type UserCreateOrConnectWithoutInitiatedBattlesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutInitiatedBattlesInput, UserUncheckedCreateWithoutInitiatedBattlesInput>
+  }
+
+  export type UserCreateWithoutOpponentBattlesInput = {
+    email: string
+    password: string
+    name?: string | null
+    role?: $Enums.Role
+    level?: number
+    xp?: number
+    wins?: number
+    losses?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    initiatedBattles?: BattleCreateNestedManyWithoutInitiatorUserInput
+    wonBattles?: BattleCreateNestedManyWithoutWinnerUserInput
+  }
+
+  export type UserUncheckedCreateWithoutOpponentBattlesInput = {
+    id?: number
+    email: string
+    password: string
+    name?: string | null
+    role?: $Enums.Role
+    level?: number
+    xp?: number
+    wins?: number
+    losses?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    initiatedBattles?: BattleUncheckedCreateNestedManyWithoutInitiatorUserInput
+    wonBattles?: BattleUncheckedCreateNestedManyWithoutWinnerUserInput
+  }
+
+  export type UserCreateOrConnectWithoutOpponentBattlesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutOpponentBattlesInput, UserUncheckedCreateWithoutOpponentBattlesInput>
+  }
+
+  export type UserCreateWithoutWonBattlesInput = {
+    email: string
+    password: string
+    name?: string | null
+    role?: $Enums.Role
+    level?: number
+    xp?: number
+    wins?: number
+    losses?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    initiatedBattles?: BattleCreateNestedManyWithoutInitiatorUserInput
+    opponentBattles?: BattleCreateNestedManyWithoutOpponentUserInput
+  }
+
+  export type UserUncheckedCreateWithoutWonBattlesInput = {
+    id?: number
+    email: string
+    password: string
+    name?: string | null
+    role?: $Enums.Role
+    level?: number
+    xp?: number
+    wins?: number
+    losses?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    initiatedBattles?: BattleUncheckedCreateNestedManyWithoutInitiatorUserInput
+    opponentBattles?: BattleUncheckedCreateNestedManyWithoutOpponentUserInput
+  }
+
+  export type UserCreateOrConnectWithoutWonBattlesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutWonBattlesInput, UserUncheckedCreateWithoutWonBattlesInput>
+  }
+
+  export type CharacterCreateWithoutInitiatedInBattlesInput = {
+    name: string
+    hp: number
+    baseHp?: number | null
+    attack: number
+    level: number
+    minLevel?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    opponentInBattles?: BattleCreateNestedManyWithoutOpponentCharacterInput
+  }
+
+  export type CharacterUncheckedCreateWithoutInitiatedInBattlesInput = {
+    id?: number
+    name: string
+    hp: number
+    baseHp?: number | null
+    attack: number
+    level: number
+    minLevel?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    opponentInBattles?: BattleUncheckedCreateNestedManyWithoutOpponentCharacterInput
+  }
+
+  export type CharacterCreateOrConnectWithoutInitiatedInBattlesInput = {
+    where: CharacterWhereUniqueInput
+    create: XOR<CharacterCreateWithoutInitiatedInBattlesInput, CharacterUncheckedCreateWithoutInitiatedInBattlesInput>
+  }
+
+  export type CharacterCreateWithoutOpponentInBattlesInput = {
+    name: string
+    hp: number
+    baseHp?: number | null
+    attack: number
+    level: number
+    minLevel?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    initiatedInBattles?: BattleCreateNestedManyWithoutInitiatorCharacterInput
+  }
+
+  export type CharacterUncheckedCreateWithoutOpponentInBattlesInput = {
+    id?: number
+    name: string
+    hp: number
+    baseHp?: number | null
+    attack: number
+    level: number
+    minLevel?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    initiatedInBattles?: BattleUncheckedCreateNestedManyWithoutInitiatorCharacterInput
+  }
+
+  export type CharacterCreateOrConnectWithoutOpponentInBattlesInput = {
+    where: CharacterWhereUniqueInput
+    create: XOR<CharacterCreateWithoutOpponentInBattlesInput, CharacterUncheckedCreateWithoutOpponentInBattlesInput>
+  }
+
+  export type UserUpsertWithoutInitiatedBattlesInput = {
+    update: XOR<UserUpdateWithoutInitiatedBattlesInput, UserUncheckedUpdateWithoutInitiatedBattlesInput>
+    create: XOR<UserCreateWithoutInitiatedBattlesInput, UserUncheckedCreateWithoutInitiatedBattlesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutInitiatedBattlesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutInitiatedBattlesInput, UserUncheckedUpdateWithoutInitiatedBattlesInput>
+  }
+
+  export type UserUpdateWithoutInitiatedBattlesInput = {
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    level?: IntFieldUpdateOperationsInput | number
+    xp?: IntFieldUpdateOperationsInput | number
+    wins?: IntFieldUpdateOperationsInput | number
+    losses?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    opponentBattles?: BattleUpdateManyWithoutOpponentUserNestedInput
+    wonBattles?: BattleUpdateManyWithoutWinnerUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutInitiatedBattlesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    level?: IntFieldUpdateOperationsInput | number
+    xp?: IntFieldUpdateOperationsInput | number
+    wins?: IntFieldUpdateOperationsInput | number
+    losses?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    opponentBattles?: BattleUncheckedUpdateManyWithoutOpponentUserNestedInput
+    wonBattles?: BattleUncheckedUpdateManyWithoutWinnerUserNestedInput
+  }
+
+  export type UserUpsertWithoutOpponentBattlesInput = {
+    update: XOR<UserUpdateWithoutOpponentBattlesInput, UserUncheckedUpdateWithoutOpponentBattlesInput>
+    create: XOR<UserCreateWithoutOpponentBattlesInput, UserUncheckedCreateWithoutOpponentBattlesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutOpponentBattlesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutOpponentBattlesInput, UserUncheckedUpdateWithoutOpponentBattlesInput>
+  }
+
+  export type UserUpdateWithoutOpponentBattlesInput = {
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    level?: IntFieldUpdateOperationsInput | number
+    xp?: IntFieldUpdateOperationsInput | number
+    wins?: IntFieldUpdateOperationsInput | number
+    losses?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiatedBattles?: BattleUpdateManyWithoutInitiatorUserNestedInput
+    wonBattles?: BattleUpdateManyWithoutWinnerUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutOpponentBattlesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    level?: IntFieldUpdateOperationsInput | number
+    xp?: IntFieldUpdateOperationsInput | number
+    wins?: IntFieldUpdateOperationsInput | number
+    losses?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiatedBattles?: BattleUncheckedUpdateManyWithoutInitiatorUserNestedInput
+    wonBattles?: BattleUncheckedUpdateManyWithoutWinnerUserNestedInput
+  }
+
+  export type UserUpsertWithoutWonBattlesInput = {
+    update: XOR<UserUpdateWithoutWonBattlesInput, UserUncheckedUpdateWithoutWonBattlesInput>
+    create: XOR<UserCreateWithoutWonBattlesInput, UserUncheckedCreateWithoutWonBattlesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutWonBattlesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutWonBattlesInput, UserUncheckedUpdateWithoutWonBattlesInput>
+  }
+
+  export type UserUpdateWithoutWonBattlesInput = {
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    level?: IntFieldUpdateOperationsInput | number
+    xp?: IntFieldUpdateOperationsInput | number
+    wins?: IntFieldUpdateOperationsInput | number
+    losses?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiatedBattles?: BattleUpdateManyWithoutInitiatorUserNestedInput
+    opponentBattles?: BattleUpdateManyWithoutOpponentUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutWonBattlesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    level?: IntFieldUpdateOperationsInput | number
+    xp?: IntFieldUpdateOperationsInput | number
+    wins?: IntFieldUpdateOperationsInput | number
+    losses?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiatedBattles?: BattleUncheckedUpdateManyWithoutInitiatorUserNestedInput
+    opponentBattles?: BattleUncheckedUpdateManyWithoutOpponentUserNestedInput
+  }
+
+  export type CharacterUpsertWithoutInitiatedInBattlesInput = {
+    update: XOR<CharacterUpdateWithoutInitiatedInBattlesInput, CharacterUncheckedUpdateWithoutInitiatedInBattlesInput>
+    create: XOR<CharacterCreateWithoutInitiatedInBattlesInput, CharacterUncheckedCreateWithoutInitiatedInBattlesInput>
+    where?: CharacterWhereInput
+  }
+
+  export type CharacterUpdateToOneWithWhereWithoutInitiatedInBattlesInput = {
+    where?: CharacterWhereInput
+    data: XOR<CharacterUpdateWithoutInitiatedInBattlesInput, CharacterUncheckedUpdateWithoutInitiatedInBattlesInput>
+  }
+
+  export type CharacterUpdateWithoutInitiatedInBattlesInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    hp?: IntFieldUpdateOperationsInput | number
+    baseHp?: NullableIntFieldUpdateOperationsInput | number | null
+    attack?: IntFieldUpdateOperationsInput | number
+    level?: IntFieldUpdateOperationsInput | number
+    minLevel?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    opponentInBattles?: BattleUpdateManyWithoutOpponentCharacterNestedInput
+  }
+
+  export type CharacterUncheckedUpdateWithoutInitiatedInBattlesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    hp?: IntFieldUpdateOperationsInput | number
+    baseHp?: NullableIntFieldUpdateOperationsInput | number | null
+    attack?: IntFieldUpdateOperationsInput | number
+    level?: IntFieldUpdateOperationsInput | number
+    minLevel?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    opponentInBattles?: BattleUncheckedUpdateManyWithoutOpponentCharacterNestedInput
+  }
+
+  export type CharacterUpsertWithoutOpponentInBattlesInput = {
+    update: XOR<CharacterUpdateWithoutOpponentInBattlesInput, CharacterUncheckedUpdateWithoutOpponentInBattlesInput>
+    create: XOR<CharacterCreateWithoutOpponentInBattlesInput, CharacterUncheckedCreateWithoutOpponentInBattlesInput>
+    where?: CharacterWhereInput
+  }
+
+  export type CharacterUpdateToOneWithWhereWithoutOpponentInBattlesInput = {
+    where?: CharacterWhereInput
+    data: XOR<CharacterUpdateWithoutOpponentInBattlesInput, CharacterUncheckedUpdateWithoutOpponentInBattlesInput>
+  }
+
+  export type CharacterUpdateWithoutOpponentInBattlesInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    hp?: IntFieldUpdateOperationsInput | number
+    baseHp?: NullableIntFieldUpdateOperationsInput | number | null
+    attack?: IntFieldUpdateOperationsInput | number
+    level?: IntFieldUpdateOperationsInput | number
+    minLevel?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiatedInBattles?: BattleUpdateManyWithoutInitiatorCharacterNestedInput
+  }
+
+  export type CharacterUncheckedUpdateWithoutOpponentInBattlesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    hp?: IntFieldUpdateOperationsInput | number
+    baseHp?: NullableIntFieldUpdateOperationsInput | number | null
+    attack?: IntFieldUpdateOperationsInput | number
+    level?: IntFieldUpdateOperationsInput | number
+    minLevel?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiatedInBattles?: BattleUncheckedUpdateManyWithoutInitiatorCharacterNestedInput
+  }
+
+  export type BattleCreateManyInitiatorUserInput = {
+    id?: number
+    mode: $Enums.BattleMode
+    status?: $Enums.BattleStatus
+    initiatorCharacterId: number
+    initiatorCurrentHp: number
+    opponentUserId: number
+    opponentCharacterId: number
+    opponentCurrentHp: number
+    turnNumber?: number
+    nextTurn?: $Enums.BattleTurn
+    log?: BattleCreatelogInput | string[]
+    winnerUserId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BattleCreateManyOpponentUserInput = {
+    id?: number
+    mode: $Enums.BattleMode
+    status?: $Enums.BattleStatus
+    initiatorUserId: number
+    initiatorCharacterId: number
+    initiatorCurrentHp: number
+    opponentCharacterId: number
+    opponentCurrentHp: number
+    turnNumber?: number
+    nextTurn?: $Enums.BattleTurn
+    log?: BattleCreatelogInput | string[]
+    winnerUserId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BattleCreateManyWinnerUserInput = {
+    id?: number
+    mode: $Enums.BattleMode
+    status?: $Enums.BattleStatus
+    initiatorUserId: number
+    initiatorCharacterId: number
+    initiatorCurrentHp: number
+    opponentUserId: number
+    opponentCharacterId: number
+    opponentCurrentHp: number
+    turnNumber?: number
+    nextTurn?: $Enums.BattleTurn
+    log?: BattleCreatelogInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BattleUpdateWithoutInitiatorUserInput = {
+    mode?: EnumBattleModeFieldUpdateOperationsInput | $Enums.BattleMode
+    status?: EnumBattleStatusFieldUpdateOperationsInput | $Enums.BattleStatus
+    initiatorCurrentHp?: IntFieldUpdateOperationsInput | number
+    opponentCurrentHp?: IntFieldUpdateOperationsInput | number
+    turnNumber?: IntFieldUpdateOperationsInput | number
+    nextTurn?: EnumBattleTurnFieldUpdateOperationsInput | $Enums.BattleTurn
+    log?: BattleUpdatelogInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    opponentUser?: UserUpdateOneRequiredWithoutOpponentBattlesNestedInput
+    winnerUser?: UserUpdateOneWithoutWonBattlesNestedInput
+    initiatorCharacter?: CharacterUpdateOneRequiredWithoutInitiatedInBattlesNestedInput
+    opponentCharacter?: CharacterUpdateOneRequiredWithoutOpponentInBattlesNestedInput
+  }
+
+  export type BattleUncheckedUpdateWithoutInitiatorUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    mode?: EnumBattleModeFieldUpdateOperationsInput | $Enums.BattleMode
+    status?: EnumBattleStatusFieldUpdateOperationsInput | $Enums.BattleStatus
+    initiatorCharacterId?: IntFieldUpdateOperationsInput | number
+    initiatorCurrentHp?: IntFieldUpdateOperationsInput | number
+    opponentUserId?: IntFieldUpdateOperationsInput | number
+    opponentCharacterId?: IntFieldUpdateOperationsInput | number
+    opponentCurrentHp?: IntFieldUpdateOperationsInput | number
+    turnNumber?: IntFieldUpdateOperationsInput | number
+    nextTurn?: EnumBattleTurnFieldUpdateOperationsInput | $Enums.BattleTurn
+    log?: BattleUpdatelogInput | string[]
+    winnerUserId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BattleUncheckedUpdateManyWithoutInitiatorUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    mode?: EnumBattleModeFieldUpdateOperationsInput | $Enums.BattleMode
+    status?: EnumBattleStatusFieldUpdateOperationsInput | $Enums.BattleStatus
+    initiatorCharacterId?: IntFieldUpdateOperationsInput | number
+    initiatorCurrentHp?: IntFieldUpdateOperationsInput | number
+    opponentUserId?: IntFieldUpdateOperationsInput | number
+    opponentCharacterId?: IntFieldUpdateOperationsInput | number
+    opponentCurrentHp?: IntFieldUpdateOperationsInput | number
+    turnNumber?: IntFieldUpdateOperationsInput | number
+    nextTurn?: EnumBattleTurnFieldUpdateOperationsInput | $Enums.BattleTurn
+    log?: BattleUpdatelogInput | string[]
+    winnerUserId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BattleUpdateWithoutOpponentUserInput = {
+    mode?: EnumBattleModeFieldUpdateOperationsInput | $Enums.BattleMode
+    status?: EnumBattleStatusFieldUpdateOperationsInput | $Enums.BattleStatus
+    initiatorCurrentHp?: IntFieldUpdateOperationsInput | number
+    opponentCurrentHp?: IntFieldUpdateOperationsInput | number
+    turnNumber?: IntFieldUpdateOperationsInput | number
+    nextTurn?: EnumBattleTurnFieldUpdateOperationsInput | $Enums.BattleTurn
+    log?: BattleUpdatelogInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiatorUser?: UserUpdateOneRequiredWithoutInitiatedBattlesNestedInput
+    winnerUser?: UserUpdateOneWithoutWonBattlesNestedInput
+    initiatorCharacter?: CharacterUpdateOneRequiredWithoutInitiatedInBattlesNestedInput
+    opponentCharacter?: CharacterUpdateOneRequiredWithoutOpponentInBattlesNestedInput
+  }
+
+  export type BattleUncheckedUpdateWithoutOpponentUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    mode?: EnumBattleModeFieldUpdateOperationsInput | $Enums.BattleMode
+    status?: EnumBattleStatusFieldUpdateOperationsInput | $Enums.BattleStatus
+    initiatorUserId?: IntFieldUpdateOperationsInput | number
+    initiatorCharacterId?: IntFieldUpdateOperationsInput | number
+    initiatorCurrentHp?: IntFieldUpdateOperationsInput | number
+    opponentCharacterId?: IntFieldUpdateOperationsInput | number
+    opponentCurrentHp?: IntFieldUpdateOperationsInput | number
+    turnNumber?: IntFieldUpdateOperationsInput | number
+    nextTurn?: EnumBattleTurnFieldUpdateOperationsInput | $Enums.BattleTurn
+    log?: BattleUpdatelogInput | string[]
+    winnerUserId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BattleUncheckedUpdateManyWithoutOpponentUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    mode?: EnumBattleModeFieldUpdateOperationsInput | $Enums.BattleMode
+    status?: EnumBattleStatusFieldUpdateOperationsInput | $Enums.BattleStatus
+    initiatorUserId?: IntFieldUpdateOperationsInput | number
+    initiatorCharacterId?: IntFieldUpdateOperationsInput | number
+    initiatorCurrentHp?: IntFieldUpdateOperationsInput | number
+    opponentCharacterId?: IntFieldUpdateOperationsInput | number
+    opponentCurrentHp?: IntFieldUpdateOperationsInput | number
+    turnNumber?: IntFieldUpdateOperationsInput | number
+    nextTurn?: EnumBattleTurnFieldUpdateOperationsInput | $Enums.BattleTurn
+    log?: BattleUpdatelogInput | string[]
+    winnerUserId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BattleUpdateWithoutWinnerUserInput = {
+    mode?: EnumBattleModeFieldUpdateOperationsInput | $Enums.BattleMode
+    status?: EnumBattleStatusFieldUpdateOperationsInput | $Enums.BattleStatus
+    initiatorCurrentHp?: IntFieldUpdateOperationsInput | number
+    opponentCurrentHp?: IntFieldUpdateOperationsInput | number
+    turnNumber?: IntFieldUpdateOperationsInput | number
+    nextTurn?: EnumBattleTurnFieldUpdateOperationsInput | $Enums.BattleTurn
+    log?: BattleUpdatelogInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiatorUser?: UserUpdateOneRequiredWithoutInitiatedBattlesNestedInput
+    opponentUser?: UserUpdateOneRequiredWithoutOpponentBattlesNestedInput
+    initiatorCharacter?: CharacterUpdateOneRequiredWithoutInitiatedInBattlesNestedInput
+    opponentCharacter?: CharacterUpdateOneRequiredWithoutOpponentInBattlesNestedInput
+  }
+
+  export type BattleUncheckedUpdateWithoutWinnerUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    mode?: EnumBattleModeFieldUpdateOperationsInput | $Enums.BattleMode
+    status?: EnumBattleStatusFieldUpdateOperationsInput | $Enums.BattleStatus
+    initiatorUserId?: IntFieldUpdateOperationsInput | number
+    initiatorCharacterId?: IntFieldUpdateOperationsInput | number
+    initiatorCurrentHp?: IntFieldUpdateOperationsInput | number
+    opponentUserId?: IntFieldUpdateOperationsInput | number
+    opponentCharacterId?: IntFieldUpdateOperationsInput | number
+    opponentCurrentHp?: IntFieldUpdateOperationsInput | number
+    turnNumber?: IntFieldUpdateOperationsInput | number
+    nextTurn?: EnumBattleTurnFieldUpdateOperationsInput | $Enums.BattleTurn
+    log?: BattleUpdatelogInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BattleUncheckedUpdateManyWithoutWinnerUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    mode?: EnumBattleModeFieldUpdateOperationsInput | $Enums.BattleMode
+    status?: EnumBattleStatusFieldUpdateOperationsInput | $Enums.BattleStatus
+    initiatorUserId?: IntFieldUpdateOperationsInput | number
+    initiatorCharacterId?: IntFieldUpdateOperationsInput | number
+    initiatorCurrentHp?: IntFieldUpdateOperationsInput | number
+    opponentUserId?: IntFieldUpdateOperationsInput | number
+    opponentCharacterId?: IntFieldUpdateOperationsInput | number
+    opponentCurrentHp?: IntFieldUpdateOperationsInput | number
+    turnNumber?: IntFieldUpdateOperationsInput | number
+    nextTurn?: EnumBattleTurnFieldUpdateOperationsInput | $Enums.BattleTurn
+    log?: BattleUpdatelogInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BattleCreateManyInitiatorCharacterInput = {
+    id?: number
+    mode: $Enums.BattleMode
+    status?: $Enums.BattleStatus
+    initiatorUserId: number
+    initiatorCurrentHp: number
+    opponentUserId: number
+    opponentCharacterId: number
+    opponentCurrentHp: number
+    turnNumber?: number
+    nextTurn?: $Enums.BattleTurn
+    log?: BattleCreatelogInput | string[]
+    winnerUserId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BattleCreateManyOpponentCharacterInput = {
+    id?: number
+    mode: $Enums.BattleMode
+    status?: $Enums.BattleStatus
+    initiatorUserId: number
+    initiatorCharacterId: number
+    initiatorCurrentHp: number
+    opponentUserId: number
+    opponentCurrentHp: number
+    turnNumber?: number
+    nextTurn?: $Enums.BattleTurn
+    log?: BattleCreatelogInput | string[]
+    winnerUserId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BattleUpdateWithoutInitiatorCharacterInput = {
+    mode?: EnumBattleModeFieldUpdateOperationsInput | $Enums.BattleMode
+    status?: EnumBattleStatusFieldUpdateOperationsInput | $Enums.BattleStatus
+    initiatorCurrentHp?: IntFieldUpdateOperationsInput | number
+    opponentCurrentHp?: IntFieldUpdateOperationsInput | number
+    turnNumber?: IntFieldUpdateOperationsInput | number
+    nextTurn?: EnumBattleTurnFieldUpdateOperationsInput | $Enums.BattleTurn
+    log?: BattleUpdatelogInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiatorUser?: UserUpdateOneRequiredWithoutInitiatedBattlesNestedInput
+    opponentUser?: UserUpdateOneRequiredWithoutOpponentBattlesNestedInput
+    winnerUser?: UserUpdateOneWithoutWonBattlesNestedInput
+    opponentCharacter?: CharacterUpdateOneRequiredWithoutOpponentInBattlesNestedInput
+  }
+
+  export type BattleUncheckedUpdateWithoutInitiatorCharacterInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    mode?: EnumBattleModeFieldUpdateOperationsInput | $Enums.BattleMode
+    status?: EnumBattleStatusFieldUpdateOperationsInput | $Enums.BattleStatus
+    initiatorUserId?: IntFieldUpdateOperationsInput | number
+    initiatorCurrentHp?: IntFieldUpdateOperationsInput | number
+    opponentUserId?: IntFieldUpdateOperationsInput | number
+    opponentCharacterId?: IntFieldUpdateOperationsInput | number
+    opponentCurrentHp?: IntFieldUpdateOperationsInput | number
+    turnNumber?: IntFieldUpdateOperationsInput | number
+    nextTurn?: EnumBattleTurnFieldUpdateOperationsInput | $Enums.BattleTurn
+    log?: BattleUpdatelogInput | string[]
+    winnerUserId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BattleUncheckedUpdateManyWithoutInitiatorCharacterInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    mode?: EnumBattleModeFieldUpdateOperationsInput | $Enums.BattleMode
+    status?: EnumBattleStatusFieldUpdateOperationsInput | $Enums.BattleStatus
+    initiatorUserId?: IntFieldUpdateOperationsInput | number
+    initiatorCurrentHp?: IntFieldUpdateOperationsInput | number
+    opponentUserId?: IntFieldUpdateOperationsInput | number
+    opponentCharacterId?: IntFieldUpdateOperationsInput | number
+    opponentCurrentHp?: IntFieldUpdateOperationsInput | number
+    turnNumber?: IntFieldUpdateOperationsInput | number
+    nextTurn?: EnumBattleTurnFieldUpdateOperationsInput | $Enums.BattleTurn
+    log?: BattleUpdatelogInput | string[]
+    winnerUserId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BattleUpdateWithoutOpponentCharacterInput = {
+    mode?: EnumBattleModeFieldUpdateOperationsInput | $Enums.BattleMode
+    status?: EnumBattleStatusFieldUpdateOperationsInput | $Enums.BattleStatus
+    initiatorCurrentHp?: IntFieldUpdateOperationsInput | number
+    opponentCurrentHp?: IntFieldUpdateOperationsInput | number
+    turnNumber?: IntFieldUpdateOperationsInput | number
+    nextTurn?: EnumBattleTurnFieldUpdateOperationsInput | $Enums.BattleTurn
+    log?: BattleUpdatelogInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    initiatorUser?: UserUpdateOneRequiredWithoutInitiatedBattlesNestedInput
+    opponentUser?: UserUpdateOneRequiredWithoutOpponentBattlesNestedInput
+    winnerUser?: UserUpdateOneWithoutWonBattlesNestedInput
+    initiatorCharacter?: CharacterUpdateOneRequiredWithoutInitiatedInBattlesNestedInput
+  }
+
+  export type BattleUncheckedUpdateWithoutOpponentCharacterInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    mode?: EnumBattleModeFieldUpdateOperationsInput | $Enums.BattleMode
+    status?: EnumBattleStatusFieldUpdateOperationsInput | $Enums.BattleStatus
+    initiatorUserId?: IntFieldUpdateOperationsInput | number
+    initiatorCharacterId?: IntFieldUpdateOperationsInput | number
+    initiatorCurrentHp?: IntFieldUpdateOperationsInput | number
+    opponentUserId?: IntFieldUpdateOperationsInput | number
+    opponentCurrentHp?: IntFieldUpdateOperationsInput | number
+    turnNumber?: IntFieldUpdateOperationsInput | number
+    nextTurn?: EnumBattleTurnFieldUpdateOperationsInput | $Enums.BattleTurn
+    log?: BattleUpdatelogInput | string[]
+    winnerUserId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BattleUncheckedUpdateManyWithoutOpponentCharacterInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    mode?: EnumBattleModeFieldUpdateOperationsInput | $Enums.BattleMode
+    status?: EnumBattleStatusFieldUpdateOperationsInput | $Enums.BattleStatus
+    initiatorUserId?: IntFieldUpdateOperationsInput | number
+    initiatorCharacterId?: IntFieldUpdateOperationsInput | number
+    initiatorCurrentHp?: IntFieldUpdateOperationsInput | number
+    opponentUserId?: IntFieldUpdateOperationsInput | number
+    opponentCurrentHp?: IntFieldUpdateOperationsInput | number
+    turnNumber?: IntFieldUpdateOperationsInput | number
+    nextTurn?: EnumBattleTurnFieldUpdateOperationsInput | $Enums.BattleTurn
+    log?: BattleUpdatelogInput | string[]
+    winnerUserId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

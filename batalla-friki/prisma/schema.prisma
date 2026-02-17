@@ -1,5 +1,3 @@
-
-
 generator client {
   provider      = "prisma-client-js"
   output        = "../generated/prisma2"
@@ -15,6 +13,22 @@ enum Role {
   ADMIN
 }
 
+enum BattleMode {
+  PVP
+  PVE
+}
+
+enum BattleStatus {
+  IN_PROGRESS
+  FINISHED
+}
+
+enum BattleTurn {
+  INITIATOR
+  OPPONENT
+}
+
+
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
@@ -29,24 +43,58 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  initiatedBattles Battle[] @relation("InitiatedBattles")
+  opponentBattles  Battle[] @relation("OpponentBattles")
+  wonBattles       Battle[] @relation("WonBattles")
 }
 
 model Character {
   id        Int     @id @default(autoincrement())
   name      String  @unique
   hp        Int     
+  baseHp    Int?    
   attack    Int     
   level     Int     
   minLevel  Int     @default(1)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  initiatedInBattles Battle[] @relation("InitiatorCharacterBattles")
+  opponentInBattles  Battle[] @relation("OpponentCharacterBattles")
 }
 
 model Battle {
-  id        Int      @id @default(autoincrement())
-  winnerId  Int
-  loserId   Int
-  log       String[]
-  createdAt DateTime @default(now())
+  id                   Int          @id @default(autoincrement())
+  mode                 BattleMode
+  status               BattleStatus @default(IN_PROGRESS)
+
+  initiatorUserId      Int
+  initiatorCharacterId Int
+  initiatorCurrentHp   Int
+  
+
+  opponentUserId       Int
+  opponentCharacterId  Int
+  opponentCurrentHp    Int
+
+  
+  turnNumber           Int          @default(1)
+  nextTurn             BattleTurn   @default(INITIATOR)
+  log                  String[]
+
+  
+  winnerUserId         Int?         
+  
+  
+  initiatorUser        User         @relation("InitiatedBattles", fields: [initiatorUserId], references: [id])
+  opponentUser         User         @relation("OpponentBattles", fields: [opponentUserId], references: [id])
+  winnerUser           User?        @relation("WonBattles", fields: [winnerUserId], references: [id])
+
+  initiatorCharacter   Character    @relation("InitiatorCharacterBattles", fields: [initiatorCharacterId], references: [id])
+  opponentCharacter    Character    @relation("OpponentCharacterBattles", fields: [opponentCharacterId], references: [id])
+
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
 }
