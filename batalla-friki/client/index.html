@@ -171,7 +171,73 @@
     </div>
 
     <div class="container hidden" id="lobby-screen">
-      <h2 id="welcome-msg">Bienvenido</h2>
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <h2 id="welcome-msg">Bienvenido</h2>
+        <button
+          class="secondary-btn"
+          onclick="logout()"
+          style="width: auto; padding: 5px 15px"
+        >
+          Salir
+        </button>
+      </div>
+
+      <div
+        style="
+          background: rgba(0, 0, 0, 0.3);
+          padding: 15px;
+          border-radius: 8px;
+          margin-bottom: 20px;
+        "
+      >
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          "
+        >
+          <div style="font-size: 2rem">
+            👤 <span id="stats-name">Jugador</span>
+          </div>
+          <div style="text-align: right">
+            <div style="font-size: 1.5rem; color: #f1c40f">
+              Nivel <span id="stats-level">1</span>
+            </div>
+            <div style="font-size: 0.9rem; color: #aaa">
+              Victorias: <span id="stats-wins" style="color: #2ecc71">0</span> |
+              Derrotas: <span id="stats-losses" style="color: #e74c3c">0</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 10px">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              font-size: 0.8rem;
+              margin-bottom: 2px;
+            "
+          >
+            <span>XP Actual</span>
+            <span><span id="stats-xp">0</span> / 100</span>
+          </div>
+          <div class="hp-bar" style="height: 10px; background: #444">
+            <div
+              id="stats-xp-bar"
+              class="hp-fill"
+              style="width: 0%; background: #3498db"
+            ></div>
+          </div>
+        </div>
+      </div>
 
       <div style="text-align: center">
         <h3>Elige a tu Campeón</h3>
@@ -182,6 +248,7 @@
 
         <div id="matchmaking-area">
           <button
+            id="btn-find-match"
             onclick="findMatch()"
             style="background-color: #f39c12; font-size: 1.5rem; padding: 20px"
           >
@@ -198,9 +265,6 @@
           ></p>
         </div>
       </div>
-
-      <hr style="border-color: #555; margin: 30px 0" />
-      <button class="secondary-btn" onclick="logout()">Cerrar Sesión</button>
     </div>
 
     <div class="container hidden" id="battle-screen">
@@ -325,7 +389,7 @@
           toggleScreens('login-screen', 'lobby-screen');
           document.getElementById('welcome-msg').innerText =
             `Hola, ${currentUser.email} (ID: ${currentUser.id})`;
-
+          updateStatsUI(currentUser);
           connectSocket();
           loadCharacters();
         } catch (err) {
@@ -333,7 +397,18 @@
         }
       }
 
-      // --- 3. CARGAR PERSONAJES ---
+      function updateStatsUI(user) {
+        document.getElementById('stats-name').innerText =
+          user.name || user.email;
+        document.getElementById('stats-level').innerText = user.level;
+        document.getElementById('stats-xp').innerText = user.xp;
+        document.getElementById('stats-wins').innerText = user.wins;
+        document.getElementById('stats-losses').innerText = user.losses;
+
+        // Calcular porcentaje barra XP
+        const xpPercent = Math.min(100, (user.xp / 100) * 100);
+        document.getElementById('stats-xp-bar').style.width = `${xpPercent}%`;
+      }
       // --- 3. CARGAR PERSONAJES ---
       async function loadCharacters() {
         const headers = { Authorization: `Bearer ${token}` };
