@@ -119,7 +119,8 @@ export class BattlesService {
         `🏆 ¡Batalla terminada! Ganador: ${initiatorDied ? battle.opponentUser.name : battle.initiatorUser.name}`,
       );
 
-      if (winnerId) await this.usersService.addExperience(winnerId, 20);
+      if (winnerId) await this.usersService.registerWin(winnerId);
+      if (loserId) await this.usersService.registerLoss(loserId);
     }
 
     const updatedBattle = await this.prisma.battle.update({
