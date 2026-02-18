@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
-
+import * as bcrypt from 'bcrypt';
 @Injectable()
 export class AuthService {
   constructor(
@@ -16,9 +16,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    if (pass === user.password) {
-      const { password, ...result } = user;
+    const isMatch = await bcrypt.compare(pass, user.password);
 
+    if (isMatch) {
+      const { password, ...result } = user;
       return result;
     }
 
@@ -29,13 +30,16 @@ export class AuthService {
     const payload = {
       email: user.email,
       sub: user.id,
-      roles: Array.isArray(user.roles) ? user.roles : [user.roles],
+
+      roles: user.roles
+        ? Array.isArray(user.roles)
+          ? user.roles
+          : [user.roles]
+        : [],
     };
-    console.log('JWT Payload:', payload);
-    const token = this.jwtService.sign(payload);
-    console.log('Generated JWT:', token);
+
     return {
-      payload: payload,
+      user: user,
       access_token: this.jwtService.sign(payload),
     };
   }

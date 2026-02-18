@@ -1,145 +1,218 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UsersService } from 'src/users/users.service';
 
-interface PlayerStats {
-  userId: number;
-  characterId: number;
-  name: string;
-  hp: number;
-  maxHp: number;
-  attack: number;
-  socketId: string;
-}
-
-export interface ActiveBattle {
-  id: string;
-  player1: PlayerStats;
-  player2: PlayerStats;
-  turn: number;
-  log: string[];
-}
-
 @Injectable()
 export class BattlesService {
-  private activeBattles: Map<string, ActiveBattle> = new Map();
-
   constructor(
     private prisma: PrismaService,
     private usersService: UsersService,
   ) {}
 
-  async createBattle(
-    player1Id: number,
-    player1CharId: number,
-    player2Id: number,
-    player2CharId: number,
-    socketId: string,
-  ) {
+  async create(data: {
+    player1Id: number;
+    player1CharId: number;
+    player2Id: number;
+    player2CharId: number;
+  }) {
     const char1 = await this.prisma.character.findUnique({
-      where: { id: player1CharId },
+      where: { id: data.player1CharId },
     });
     const char2 = await this.prisma.character.findUnique({
-      where: { id: player2CharId },
+      where: { id: data.player2CharId },
     });
 
     if (!char1 || !char2)
-      throw new NotFoundException('Uno de los personajes no existe');
+      throw new NotFoundException('Personaje no encontrado');
 
-    const battleId = `battle-${Date.now()}`;
-
-    const newBattle: ActiveBattle = {
-      id: battleId,
-      player1: {
-        userId: player1Id,
-        characterId: char1.id,
-        name: char1.name,
-        hp: char1.hp,
-        maxHp: char1.hp,
-        attack: char1.attack,
-        socketId,
-      },
-      player2: {
-        userId: player2Id,
-        characterId: char2.id,
-        name: char2.name,
-        hp: char2.hp,
-        maxHp: char2.hp,
-        attack: char2.attack,
-        socketId: '',
-      },
-      turn: player1Id,
-      log: [`Batalla iniciada: ${char1.name} vs ${char2.name}`],
-    };
-
-    this.activeBattles.set(battleId, newBattle);
-    return newBattle;
-  }
-
-  joinBattle(battleId: string, userId: number, socketId: string) {
-    const battle = this.activeBattles.get(battleId);
-    if (!battle) throw new NotFoundException('Batalla no encontrada');
-
-    if (battle.player2.userId === userId) {
-      battle.player2.socketId = socketId;
-    } else if (battle.player1.userId === userId) {
-      battle.player1.socketId = socketId;
-    } else {
-      throw new Error('No eres parte de esta batalla');
-    }
-
-    return battle;
-  }
-
-  async attack(battleId: string, userId: number) {
-    const battle = this.activeBattles.get(battleId);
-    if (!battle) throw new Error('Batalla no existe');
-
-    if (battle.turn !== userId) throw new Error('No es tu turno');
-
-    const attacker =
-      battle.player1.userId === userId ? battle.player1 : battle.player2;
-    const defender =
-      battle.player1.userId === userId ? battle.player2 : battle.player1;
-
-    const damage = Math.floor(
-      attacker.attack + Math.random() * (attacker.attack * 0.1),
-    );
-    defender.hp = Math.max(0, defender.hp - damage);
-
-    const msg = `${attacker.name} golpea a ${defender.name} causando ${damage} daño. (HP restante: ${defender.hp})`;
-    battle.log.push(msg);
-
-    if (defender.hp <= 0) {
-      return this.endBattle(battle, attacker, defender);
-    }
-
-    battle.turn = defender.userId;
-
-    return { status: 'ongoing', battle };
-  }
-
-  private async endBattle(
-    battle: ActiveBattle,
-    winner: PlayerStats,
-    loser: PlayerStats,
-  ) {
-    await this.prisma.battle.create({
+    const battle = await this.prisma.battle.create({
       data: {
-        winnerId: winner.userId,
-        loserId: loser.userId,
-        log: battle.log,
+        mode: 'PVP',
+        status: 'IN_PROGRESS',
+        initiatorUserId: data.player1Id,
+        initiatorCharacterId: data.player1CharId,
+        initiatorCurrentHp: char1.hp, // HP Inicial
+
+        opponentUserId: data.player2Id,
+        opponentCharacterId: data.player2CharId,
+        opponentCurrentHp: char2.hp, // HP Inicial
+
+        nextTurn: 'INITIATOR',
+        log: [`Batalla iniciada: ${char1.name} vs ${char2.name}`],
+      },
+      include: {
+        initiatorCharacter: true,
+        opponentCharacter: true,
+        initiatorUser: true,
+        opponentUser: true,
       },
     });
 
-    await this.usersService.addExperience(winner.userId, 10);
-    this.activeBattles.delete(battle.id);
+    return this.mapBattleToDto(battle);
+  }
 
+  async processTurn(battleId: number, userId: number) {
+    const battle = await this.prisma.battle.findUnique({
+      where: { id: battleId },
+      include: {
+        initiatorCharacter: true,
+        opponentCharacter: true,
+        initiatorUser: true,
+        opponentUser: true,
+      },
+    });
+
+    if (!battle) throw new NotFoundException('Batalla no encontrada');
+    if (battle.status !== 'IN_PROGRESS')
+      throw new BadRequestException('La batalla ha terminado');
+
+    const isInitiator = battle.initiatorUserId === userId;
+    const isOpponent = battle.opponentUserId === userId;
+
+    if (!isInitiator && !isOpponent)
+      throw new BadRequestException('No estás en esta batalla');
+
+    const isMyTurn =
+      (battle.nextTurn === 'INITIATOR' && isInitiator) ||
+      (battle.nextTurn === 'OPPONENT' && isOpponent);
+
+    if (!isMyTurn) throw new BadRequestException('No es tu turno');
+
+    const attackerChar = isInitiator
+      ? battle.initiatorCharacter
+      : battle.opponentCharacter;
+    const damage = Math.floor(
+      attackerChar.attack * (0.9 + Math.random() * 0.2),
+    );
+
+    let newInitiatorHp = battle.initiatorCurrentHp;
+    let newOpponentHp = battle.opponentCurrentHp;
+
+    if (isInitiator) {
+      newOpponentHp = Math.max(0, newOpponentHp - damage);
+    } else {
+      newInitiatorHp = Math.max(0, newInitiatorHp - damage);
+    }
+
+    const opponentDied = newOpponentHp <= 0;
+    const initiatorDied = newInitiatorHp <= 0;
+    const isGameOver = opponentDied || initiatorDied;
+
+    let winnerId = null;
+    let loserId = null;
+
+    const logMsg = `⚔️ ${isInitiator ? battle.initiatorUser.name : battle.opponentUser.name} (${attackerChar.name}) atacó e hizo ${damage} de daño!`;
+    const newLogs = [...battle.log, logMsg];
+
+    if (isGameOver) {
+      winnerId = initiatorDied ? battle.opponentUserId : battle.initiatorUserId;
+      loserId = initiatorDied ? battle.initiatorUserId : battle.opponentUserId;
+      newLogs.push(
+        `🏆 ¡Batalla terminada! Ganador: ${initiatorDied ? battle.opponentUser.name : battle.initiatorUser.name}`,
+      );
+
+      if (winnerId) await this.usersService.registerWin(winnerId);
+      if (loserId) await this.usersService.registerLoss(loserId);
+    }
+
+    const updatedBattle = await this.prisma.battle.update({
+      where: { id: battleId },
+      data: {
+        initiatorCurrentHp: newInitiatorHp,
+        opponentCurrentHp: newOpponentHp,
+        log: newLogs,
+        status: isGameOver ? 'FINISHED' : 'IN_PROGRESS',
+        winnerUserId: winnerId,
+        nextTurn: isGameOver
+          ? battle.nextTurn
+          : battle.nextTurn === 'INITIATOR'
+            ? 'OPPONENT'
+            : 'INITIATOR',
+      },
+      include: {
+        initiatorCharacter: true,
+        opponentCharacter: true,
+        initiatorUser: true,
+        opponentUser: true,
+      },
+    });
+
+    return this.mapBattleToDto(updatedBattle);
+  }
+  private mapBattleToDto(battle: any) {
     return {
-      status: 'finished',
-      winner: winner.name,
-      loser: loser.name,
-      battle,
+      id: battle.id,
+      mode: battle.mode,
+      status: battle.status,
+      player1: {
+        userId: battle.initiatorUserId,
+        name: battle.initiatorUser?.name || 'Jugador 1',
+        characterId: battle.initiatorCharacterId,
+        charName: battle.initiatorCharacter.name,
+        hp: battle.initiatorCurrentHp,
+        maxHp: battle.initiatorCharacter.hp,
+        attack: battle.initiatorCharacter.attack,
+      },
+      player2: {
+        userId: battle.opponentUserId,
+        name: battle.opponentUser?.name || 'Jugador 2',
+        characterId: battle.opponentCharacterId,
+        charName: battle.opponentCharacter.name,
+        hp: battle.opponentCurrentHp,
+        maxHp: battle.opponentCharacter.hp,
+        attack: battle.opponentCharacter.attack,
+      },
+      turn:
+        battle.nextTurn === 'INITIATOR'
+          ? battle.initiatorUserId
+          : battle.opponentUserId,
+      log: battle.log,
+      winnerUserId: battle.winnerUserId,
     };
+  }
+
+  async createPve(data: { playerId: number; playerCharId: number }) {
+    const playerChar = await this.prisma.character.findUnique({
+      where: { id: data.playerCharId },
+    });
+    if (!playerChar) throw new NotFoundException('Personaje no encontrado');
+
+    const botUser = await this.prisma.user.findUnique({
+      where: { email: 'bot@batalla.com' },
+    });
+    if (!botUser)
+      throw new NotFoundException('El Bot no ha sido creado en el seed');
+
+    const battle = await this.prisma.battle.create({
+      data: {
+        mode: 'PVE',
+        status: 'IN_PROGRESS',
+
+        initiatorUserId: data.playerId,
+        initiatorCharacterId: data.playerCharId,
+        initiatorCurrentHp: playerChar.hp,
+
+        opponentUserId: botUser.id,
+        opponentCharacterId: playerChar.id,
+        opponentCurrentHp: playerChar.hp,
+
+        nextTurn: 'INITIATOR',
+        log: [
+          `Batalla PVE iniciada: ${playerChar.name} vs ${playerChar.name} (CPU)`,
+        ],
+      },
+      include: {
+        initiatorCharacter: true,
+        opponentCharacter: true,
+        initiatorUser: true,
+        opponentUser: true,
+      },
+    });
+
+    return this.mapBattleToDto(battle);
   }
 }

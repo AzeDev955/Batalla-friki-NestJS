@@ -29,21 +29,34 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { id } });
   }
 
-  async addExperience(userId: number, xpAmount: number) {
+  async registerWin(userId: number) {
     const user = await this.findOne(userId);
     if (!user) return;
 
-    let newXp = user.xp + xpAmount;
+    let newXp = user.xp + 10;
     let newLevel = user.level;
 
-    while (newXp >= 100) {
+    if (newXp >= 100) {
       newLevel++;
       newXp = newXp - 100;
     }
 
     return this.prisma.user.update({
       where: { id: userId },
-      data: { xp: newXp, level: newLevel },
+      data: {
+        wins: { increment: 1 },
+        xp: newXp,
+        level: newLevel,
+      },
+    });
+  }
+
+  async registerLoss(userId: number) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        losses: { increment: 1 },
+      },
     });
   }
 

@@ -171,44 +171,112 @@
     </div>
 
     <div class="container hidden" id="lobby-screen">
-      <h2 id="welcome-msg">Bienvenido</h2>
-      <div class="row">
-        <div style="flex: 1">
-          <h3>1. Elige tu Personaje</h3>
-          <select id="my-char-select"></select>
-        </div>
-        <div style="flex: 1">
-          <h3>2. Oponente (ID Usuario)</h3>
-          <input
-            type="number"
-            id="opponent-id"
-            placeholder="ID del rival (ej: 2)"
-          />
-          <select id="opponent-char-select">
-            <option value="">-- Personaje Rival (Simulado) --</option>
-          </select>
-        </div>
-      </div>
-      <br />
-      <button onclick="createBattle()" style="background-color: #f39c12">
-        ⚔️ DESAFIAR (Crear Batalla)
-      </button>
-
-      <hr style="border-color: #555; margin: 20px 0" />
-
-      <h3>O unirse a una existente:</h3>
-      <div class="row">
-        <input
-          type="text"
-          id="join-battle-id"
-          placeholder="ID de Batalla (ej: battle-173...)"
-        />
-        <button onclick="joinBattle()" style="background-color: #3498db">
-          Unirse
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <h2 id="welcome-msg">Bienvenido</h2>
+        <button
+          class="secondary-btn"
+          onclick="logout()"
+          style="width: auto; padding: 5px 15px"
+        >
+          Salir
         </button>
       </div>
-      <br />
-      <button class="secondary-btn" onclick="logout()">Cerrar Sesión</button>
+
+      <div
+        style="
+          background: rgba(0, 0, 0, 0.3);
+          padding: 15px;
+          border-radius: 8px;
+          margin-bottom: 20px;
+        "
+      >
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          "
+        >
+          <div style="font-size: 2rem">
+            👤 <span id="stats-name">Jugador</span>
+          </div>
+          <div style="text-align: right">
+            <div style="font-size: 1.5rem; color: #f1c40f">
+              Nivel <span id="stats-level">1</span>
+            </div>
+            <div style="font-size: 0.9rem; color: #aaa">
+              Victorias: <span id="stats-wins" style="color: #2ecc71">0</span> |
+              Derrotas: <span id="stats-losses" style="color: #e74c3c">0</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 10px">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              font-size: 0.8rem;
+              margin-bottom: 2px;
+            "
+          >
+            <span>XP Actual</span>
+            <span><span id="stats-xp">0</span> / 100</span>
+          </div>
+          <div class="hp-bar" style="height: 10px; background: #444">
+            <div
+              id="stats-xp-bar"
+              class="hp-fill"
+              style="width: 0%; background: #3498db"
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: center">
+        <h3>Elige a tu Campeón</h3>
+        <select
+          id="my-char-select"
+          style="font-size: 1.2rem; padding: 10px; margin-bottom: 20px"
+        ></select>
+
+        <div id="matchmaking-area">
+          <button
+            id="btn-find-match"
+            onclick="findMatch()"
+            style="background-color: #f39c12; font-size: 1.5rem; padding: 20px"
+          >
+            ⚔️ BUSCAR PARTIDA
+          </button>
+          <button
+            id="btn-pve"
+            onclick="startPve()"
+            style="
+              background-color: #8e44ad;
+              font-size: 1.2rem;
+              padding: 15px;
+              margin-top: 10px;
+            "
+          >
+            🤖 JUGAR VS CPU
+          </button>
+          <p
+            id="match-status"
+            style="
+              margin-top: 15px;
+              font-style: italic;
+              color: #f1c40f;
+              min-height: 20px;
+            "
+          ></p>
+        </div>
+      </div>
     </div>
 
     <div class="container hidden" id="battle-screen">
@@ -265,7 +333,7 @@
     <script>
       const API_URL = 'http://localhost:3000';
       let socket;
-      let token = localStorage.getItem('jwt_token') || '';
+      let token = sessionStorage.getItem('jwt_token') || '';
       let currentUser = null;
       let currentBattleId = '';
 
@@ -276,7 +344,8 @@
       }
 
       function logout() {
-        localStorage.removeItem('jwt_token');
+        sessionStorage.removeItem('jwt_token');
+        sessionStorage.removeItem('user_id'); // <--- NUEVO
         location.reload();
       }
 
@@ -328,12 +397,13 @@
           currentUser = data.user;
 
           // Guardar token por si recarga
-          localStorage.setItem('jwt_token', token);
+          sessionStorage.setItem('jwt_token', token);
+          sessionStorage.setItem('user_id', currentUser.id);
 
           toggleScreens('login-screen', 'lobby-screen');
           document.getElementById('welcome-msg').innerText =
             `Hola, ${currentUser.email} (ID: ${currentUser.id})`;
-
+          updateStatsUI(currentUser);
           connectSocket();
           loadCharacters();
         } catch (err) {
@@ -341,33 +411,60 @@
         }
       }
 
-      // --- 3. CARGAR PERSONAJES ---
-      async function loadCharacters() {
-        // Nota: Si tu ruta GET /characters está protegida, hay que pasar el header Authorization
-        const headers = { Authorization: `Bearer ${token}` };
+      function updateStatsUI(user) {
+        document.getElementById('stats-name').innerText =
+          user.name || user.email;
+        document.getElementById('stats-level').innerText = user.level;
+        document.getElementById('stats-xp').innerText = user.xp;
+        document.getElementById('stats-wins').innerText = user.wins;
+        document.getElementById('stats-losses').innerText = user.losses;
 
+        // Calcular porcentaje barra XP
+        const xpPercent = Math.min(100, (user.xp / 100) * 100);
+        document.getElementById('stats-xp-bar').style.width = `${xpPercent}%`;
+      }
+      // --- 3. CARGAR PERSONAJES ---
+      // --- CARGAR PERSONAJES ---
+      async function loadCharacters() {
+        const headers = { Authorization: `Bearer ${token}` };
         try {
           const res = await fetch(`${API_URL}/characters`, { headers });
-          if (res.status === 401) return logout(); // Token expirado
+          if (res.status === 401) return logout();
 
           const chars = await res.json();
           const selectMy = document.getElementById('my-char-select');
-          const selectOpp = document.getElementById('opponent-char-select');
-
           selectMy.innerHTML = '';
-          selectOpp.innerHTML =
-            '<option value="">-- Personaje Rival --</option>';
+
+          // Ordenamos para que los desbloqueados salgan primero
+          chars.sort((a, b) => a.minLevel - b.minLevel);
 
           chars.forEach((c) => {
-            const opt = `<option value="${c.id}">${c.name} (HP: ${c.hp}, ATK: ${c.attack})</option>`;
-            selectMy.innerHTML += opt;
-            selectOpp.innerHTML += opt;
+            // Comprobamos si podemos usarlo
+            const isLocked = currentUser.level < c.minLevel;
+
+            // Creamos el texto de la opción
+            let text = `${c.name} (HP: ${c.hp}, ATK: ${c.attack})`;
+            if (isLocked) {
+              text = `🔒 ${c.name} (Nivel ${c.minLevel} requerido)`;
+            }
+
+            // Creamos el elemento <option>
+            const opt = document.createElement('option');
+            opt.value = c.id;
+            opt.innerText = text;
+
+            // Si está bloqueado, lo deshabilitamos
+            if (isLocked) {
+              opt.disabled = true;
+              opt.style.color = '#e74c3c'; // Rojo para indicar peligro/bloqueo
+            }
+
+            selectMy.appendChild(opt);
           });
         } catch (e) {
           console.error('Error cargando personajes', e);
         }
       }
-
       // --- 4. SOCKETS ---
       function connectSocket() {
         if (socket) return; // Ya conectado
@@ -505,6 +602,113 @@
         p.innerText = `>>> ${msg}`;
         logDiv.appendChild(p);
       }
+
+      // --- SOCKETS ---
+      function connectSocket() {
+        if (socket) return;
+        socket = io(API_URL, {
+          extraHeaders: { Authorization: `Bearer ${token}` },
+        });
+
+        socket.on('connect', () => console.log('WS Conectado'));
+
+        // Recibimos estado de la cola ("Buscando...", "Ya estás en cola")
+        socket.on('matchmaking-status', (msg) => {
+          document.getElementById('match-status').innerText = msg;
+        });
+
+        // ¡PARTIDA ENCONTRADA!
+        socket.on('battle-created', (battle) => {
+          document.getElementById('match-status').innerText =
+            '¡Oponente Encontrado!';
+          setTimeout(() => enterBattleMode(battle), 1000); // Pequeña pausa dramática
+        });
+
+        socket.on('turn-update', (battle) => updateInterface(battle));
+
+        socket.on('battle-finished', (result) => {
+          updateInterface(result.battle);
+          document.getElementById('turn-msg').innerText =
+            `🏆 GANADOR: ID ${result.winner} 🏆`;
+          document.getElementById('btn-attack').disabled = true;
+          document.getElementById('btn-restart').classList.remove('hidden');
+        });
+      }
+
+      // --- NUEVA FUNCIÓN BUSCAR PARTIDA ---
+      function findMatch() {
+        const myChar = document.getElementById('my-char-select').value;
+        if (!myChar) return alert('Elige un personaje primero');
+
+        // Desactivar botón para que no le den 100 veces
+        const btn = document.querySelector('#matchmaking-area button');
+        btn.disabled = true;
+        btn.innerText = 'Buscando...';
+        btn.style.backgroundColor = '#7f8c8d';
+
+        socket.emit('find-match', {
+          userId: currentUser.id,
+          characterId: parseInt(myChar),
+        });
+      }
+
+      // --- AUTO-LOGIN AL CARGAR LA PÁGINA ---
+      async function checkSession() {
+        const storedToken = sessionStorage.getItem('jwt_token');
+        const storedUserId = sessionStorage.getItem('user_id');
+
+        if (storedToken && storedUserId) {
+          // Restauramos variables globales
+          token = storedToken;
+
+          try {
+            // Pedimos los datos FRESCOS del usuario (para ver si subió de nivel o ganó XP)
+            const res = await fetch(`${API_URL}/users/${storedUserId}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (res.ok) {
+              currentUser = await res.json();
+
+              // Si todo va bien, saltamos al Lobby directamente
+              toggleScreens('login-screen', 'lobby-screen');
+              document.getElementById('welcome-msg').innerText =
+                `Hola de nuevo, ${currentUser.email}`;
+
+              // Actualizamos UI y reconectamos
+              if (typeof updateStatsUI === 'function')
+                updateStatsUI(currentUser);
+              loadCharacters();
+              connectSocket();
+              console.log('✅ Sesión restaurada con éxito');
+            } else {
+              // Si el token caducó o el usuario no existe, limpiamos
+              console.warn('Sesión inválida, volviendo al login');
+              logout();
+            }
+          } catch (e) {
+            console.error('Error al restaurar sesión:', e);
+            logout();
+          }
+        }
+      }
+      function startPve() {
+        const myChar = document.getElementById('my-char-select').value;
+        if (!myChar) return alert('Elige un personaje primero');
+
+        // Deshabilitar botones
+        document.getElementById('btn-pve').disabled = true;
+        document.getElementById('match-status').innerText =
+          'Invocando a la CPU...';
+
+        socket.emit('create-pve-battle', {
+          userId: parseInt(currentUser.id),
+          characterId: parseInt(myChar),
+        });
+      }
+
+      // Ejecutar al inicio
+      checkSession();
     </script>
   </body>
 </html>

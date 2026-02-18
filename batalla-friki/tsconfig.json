@@ -20,9 +20,12 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
-  },
-  "paths": {
-    "generated/*": ["./generated/*"]
+    "noFallthroughCasesInSwitch": false,
+
+    "types": ["jest", "node"],
+
+    "paths": {
+      "generated/*": ["./generated/*"]
+    }
   }
 }
