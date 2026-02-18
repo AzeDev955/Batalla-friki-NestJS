@@ -5,7 +5,6 @@ import { JwtService } from '@nestjs/jwt';
 import { UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
-// --- MOCK DE BCRYPT ---
 jest.mock('bcrypt', () => ({
   compare: jest.fn(),
   hash: jest.fn(),
@@ -60,7 +59,6 @@ describe('AuthService', () => {
       mockUsersService.findByEmail.mockResolvedValue(mockUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(false); // Contraseña incorrecta
 
-      // CAMBIO AQUÍ: Esperamos que lance una excepción, no que devuelva null
       await expect(
         service.validateUser('test@test.com', 'wrong'),
       ).rejects.toThrow(UnauthorizedException);
