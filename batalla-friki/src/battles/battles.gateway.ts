@@ -129,29 +129,6 @@ export class BattlesGateway implements OnGatewayDisconnect {
     }
   }
 
-  @SubscribeMessage('attack')
-  async handleAttack(
-    @MessageBody() data: { battleId: number; userId: number },
-  ) {
-    try {
-      const battle = await this.battlesService.processTurn(
-        data.battleId,
-        data.userId,
-      );
-
-      if (battle.status === 'FINISHED') {
-        this.server.to(`battle-${data.battleId}`).emit('battle-finished', {
-          winner: battle.winnerUserId,
-          battle: battle,
-        });
-      } else {
-        this.server.to(`battle-${data.battleId}`).emit('turn-update', battle);
-      }
-    } catch (error) {
-      console.error('Error en ataque:', error.message);
-    }
-  }
-
   @SubscribeMessage('join-battle')
   async handleJoinBattle(
     @ConnectedSocket() client: Socket,
@@ -163,5 +140,82 @@ export class BattlesGateway implements OnGatewayDisconnect {
       'matchmaking-status',
       'Te has unido como espectador/reconectado',
     );
+  }
+
+  @SubscribeMessage('create-pve-battle')
+  async handleCreatePve(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { userId: number; characterId: number },
+  ) {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { id: data.userId },
+      });
+      const char = await this.prisma.character.findUnique({
+        where: { id: data.characterId },
+      });
+
+      if (user.level < char.minLevel) {
+        client.emit(
+          'matchmaking-status',
+          `🔒 Nivel insuficiente para ${char.name}.`,
+        );
+        return;
+      }
+
+      const battle = await this.battlesService.createPve({
+        playerId: data.userId,
+        playerCharId: data.characterId,
+      });
+
+      const roomId = `battle-${battle.id}`;
+      client.join(roomId);
+
+      client.emit('battle-created', battle);
+    } catch (e) {
+      console.error(e);
+      client.emit('matchmaking-status', 'Error creando partida vs CPU');
+    }
+  }
+
+  @SubscribeMessage('attack')
+  async handleAttack(
+    @MessageBody() data: { battleId: number; userId: number },
+  ) {
+    try {
+      let battle = await this.battlesService.processTurn(
+        data.battleId,
+        data.userId,
+      );
+      this.broadcastUpdate(data.battleId, battle);
+
+      if (battle.status === 'IN_PROGRESS' && battle.mode === 'PVE') {
+        setTimeout(async () => {
+          try {
+            const botUserId = battle.player2.userId;
+            const battleAfterBot = await this.battlesService.processTurn(
+              data.battleId,
+              botUserId,
+            );
+            this.broadcastUpdate(data.battleId, battleAfterBot);
+          } catch (err) {
+            console.error('Error en turno de Bot:', err);
+          }
+        }, 1500);
+      }
+    } catch (error) {
+      console.error('Error en ataque:', error.message);
+    }
+  }
+
+  private broadcastUpdate(battleId: number, battle: any) {
+    const roomId = `battle-${battleId}`;
+    if (battle.status === 'FINISHED') {
+      this.server
+        .to(roomId)
+        .emit('battle-finished', { winner: battle.winnerUserId, battle });
+    } else {
+      this.server.to(roomId).emit('turn-update', battle);
+    }
   }
 }

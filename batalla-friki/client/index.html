@@ -254,6 +254,18 @@
           >
             ⚔️ BUSCAR PARTIDA
           </button>
+          <button
+            id="btn-pve"
+            onclick="startPve()"
+            style="
+              background-color: #8e44ad;
+              font-size: 1.2rem;
+              padding: 15px;
+              margin-top: 10px;
+            "
+          >
+            🤖 JUGAR VS CPU
+          </button>
           <p
             id="match-status"
             style="
@@ -679,6 +691,20 @@
             logout();
           }
         }
+      }
+      function startPve() {
+        const myChar = document.getElementById('my-char-select').value;
+        if (!myChar) return alert('Elige un personaje primero');
+
+        // Deshabilitar botones
+        document.getElementById('btn-pve').disabled = true;
+        document.getElementById('match-status').innerText =
+          'Invocando a la CPU...';
+
+        socket.emit('create-pve-battle', {
+          userId: parseInt(currentUser.id),
+          characterId: parseInt(myChar),
+        });
       }
 
       // Ejecutar al inicio

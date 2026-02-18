@@ -150,6 +150,7 @@ export class BattlesService {
   private mapBattleToDto(battle: any) {
     return {
       id: battle.id,
+      mode: battle.mode,
       status: battle.status,
       player1: {
         userId: battle.initiatorUserId,
@@ -176,5 +177,46 @@ export class BattlesService {
       log: battle.log,
       winnerUserId: battle.winnerUserId,
     };
+  }
+
+  async createPve(data: { playerId: number; playerCharId: number }) {
+    const playerChar = await this.prisma.character.findUnique({
+      where: { id: data.playerCharId },
+    });
+    if (!playerChar) throw new NotFoundException('Personaje no encontrado');
+
+    const botUser = await this.prisma.user.findUnique({
+      where: { email: 'bot@batalla.com' },
+    });
+    if (!botUser)
+      throw new NotFoundException('El Bot no ha sido creado en el seed');
+
+    const battle = await this.prisma.battle.create({
+      data: {
+        mode: 'PVE',
+        status: 'IN_PROGRESS',
+
+        initiatorUserId: data.playerId,
+        initiatorCharacterId: data.playerCharId,
+        initiatorCurrentHp: playerChar.hp,
+
+        opponentUserId: botUser.id,
+        opponentCharacterId: playerChar.id,
+        opponentCurrentHp: playerChar.hp,
+
+        nextTurn: 'INITIATOR',
+        log: [
+          `Batalla PVE iniciada: ${playerChar.name} vs ${playerChar.name} (CPU)`,
+        ],
+      },
+      include: {
+        initiatorCharacter: true,
+        opponentCharacter: true,
+        initiatorUser: true,
+        opponentUser: true,
+      },
+    });
+
+    return this.mapBattleToDto(battle);
   }
 }
