@@ -8,6 +8,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { BattlesService } from './battles.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 interface QueuedPlayer {
   socket: Socket;
@@ -26,7 +27,10 @@ export class BattlesGateway implements OnGatewayDisconnect {
 
   private matchmakingQueue: QueuedPlayer[] = [];
 
-  constructor(private readonly battlesService: BattlesService) {}
+  constructor(
+    private readonly battlesService: BattlesService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   handleDisconnect(client: Socket) {
     this.matchmakingQueue = this.matchmakingQueue.filter(
@@ -46,7 +50,29 @@ export class BattlesGateway implements OnGatewayDisconnect {
       `Jugador ${data.userId} busca partida con Personaje ${data.characterId}...`,
     );
 
-    // 1. Evitar duplicados
+    const user = await this.prisma.user.findUnique({
+      where: { id: data.userId },
+    });
+    const character = await this.prisma.character.findUnique({
+      where: { id: data.characterId },
+    });
+
+    if (!user || !character) {
+      client.emit(
+        'matchmaking-status',
+        '❌ Error: Usuario o Personaje no encontrado.',
+      );
+      return;
+    }
+
+    if (user.level < character.minLevel) {
+      client.emit(
+        'matchmaking-status',
+        `🔒 Nivel insuficiente. Necesitas nivel ${character.minLevel} para usar a ${character.name}.`,
+      );
+      return;
+    }
+
     const alreadyInQueue = this.matchmakingQueue.find(
       (p) => p.userId === data.userId,
     );
@@ -55,7 +81,6 @@ export class BattlesGateway implements OnGatewayDisconnect {
       return;
     }
 
-    // 2. Añadir a cola
     this.matchmakingQueue.push({
       socket: client,
       userId: data.userId,
@@ -71,7 +96,7 @@ export class BattlesGateway implements OnGatewayDisconnect {
 
       if (player1 && player2) {
         console.log(
-          `¡Intentando crear Match! ${player1.userId} vs ${player2.userId}`,
+          `Intentando crear Match! ${player1.userId} vs ${player2.userId}`,
         );
 
         try {
@@ -89,9 +114,8 @@ export class BattlesGateway implements OnGatewayDisconnect {
           this.server.to(roomId).emit('battle-created', battle);
           console.log(`Batalla ${battle.id} creada con éxito`);
         } catch (error) {
-          console.error('❌ Error creando batalla:', error.message);
+          console.error('Error creando batalla:', error.message);
 
-          // CRUCIAL: Si falla, avisar a los usuarios para que no se queden "Buscando..."
           player1.socket.emit(
             'matchmaking-status',
             'Error al crear batalla. Inténtalo de nuevo.',
@@ -125,7 +149,6 @@ export class BattlesGateway implements OnGatewayDisconnect {
       }
     } catch (error) {
       console.error('Error en ataque:', error.message);
-      // Podrías emitir un error al cliente si quieres
     }
   }
 
