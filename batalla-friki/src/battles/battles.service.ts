@@ -81,18 +81,14 @@ export class BattlesService {
       (battle.nextTurn === 'OPPONENT' && isOpponent);
 
     if (!isMyTurn) throw new BadRequestException('No es tu turno');
+
     const attackerChar = isInitiator
       ? battle.initiatorCharacter
       : battle.opponentCharacter;
-    const defenderChar = isInitiator
-      ? battle.opponentCharacter
-      : battle.initiatorCharacter;
-
     const damage = Math.floor(
       attackerChar.attack * (0.9 + Math.random() * 0.2),
     );
 
-    // Aplicar daño
     let newInitiatorHp = battle.initiatorCurrentHp;
     let newOpponentHp = battle.opponentCurrentHp;
 

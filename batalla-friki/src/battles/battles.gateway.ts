@@ -60,7 +60,7 @@ export class BattlesGateway implements OnGatewayDisconnect {
     if (!user || !character) {
       client.emit(
         'matchmaking-status',
-        '❌ Error: Usuario o Personaje no encontrado.',
+        ' Error: Usuario o Personaje no encontrado.',
       );
       return;
     }
@@ -68,7 +68,7 @@ export class BattlesGateway implements OnGatewayDisconnect {
     if (user.level < character.minLevel) {
       client.emit(
         'matchmaking-status',
-        `🔒 Nivel insuficiente. Necesitas nivel ${character.minLevel} para usar a ${character.name}.`,
+        ` Nivel insuficiente. Necesitas nivel ${character.minLevel} para usar a ${character.name}.`,
       );
       return;
     }
